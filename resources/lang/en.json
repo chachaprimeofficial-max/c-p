@@ -141,5 +141,16 @@
   "Shipping is estimated at checkout; final carrier and customs charges may need confirmation.": "Shipping is estimated at checkout; final carrier and customs charges may need confirmation.",
   "Detailed product information will be provided by our product team.": "Detailed product information will be provided by our product team.",
   "Blueprint": "Blueprint",
-  "Product document": "Product document"
+  "Product document": "Product document",
+  "Price per unit": "Price per unit",
+  "units": "units",
+  "unit": "unit",
+  "participants": "participants",
+  "Ends": "Ends",
+  "when target is reached": "when target is reached",
+  "Ask our team about current group-buy availability and target pricing.": "Ask our team about current group-buy availability and target pricing.",
+  "Select a variation": "Select a variation",
+  "available": "available",
+  "Secure order details and shipping terms will be confirmed before payment.": "Secure order details and shipping terms will be confirmed before payment.",
+  "business days": "business days"
 }
