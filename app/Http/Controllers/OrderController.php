@@ -7,6 +7,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Services\CartPricingService;
 use App\Services\CurrencyService;
+use App\Services\OrderPaymentService;
 use App\Services\StripeCheckoutService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -103,11 +104,20 @@ class OrderController extends Controller
         }
     }
 
-    public function success(Request $request): View|RedirectResponse
+    public function success(Request $request, StripeCheckoutService $stripe, OrderPaymentService $payments): View|RedirectResponse
     {
         abort_if($request->user()->is_admin, 403);
         $sessionId = (string) $request->query('session_id', '');
         $order = Order::with('items')->where('user_id', $request->user()->id)->where('payment_reference', $sessionId)->firstOrFail();
+        try {
+            $paymentSession = $stripe->retrieveSession($sessionId);
+            if (($paymentSession['payment_status'] ?? null) === 'paid') {
+                $order = $payments->markPaid($order, $paymentSession, $stripe);
+                session()->forget('cart');
+            }
+        } catch (Throwable $exception) {
+            report($exception);
+        }
         return view('storefront.order-confirmation', compact('order'));
     }
 }
