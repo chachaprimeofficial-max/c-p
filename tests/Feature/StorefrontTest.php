@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -50,4 +51,34 @@ class StorefrontTest extends TestCase
             $this->get($path)->assertOk();
         }
     }
+    public function test_product_detail_and_checkout_pages_render(): void
+    {
+        $product = Product::create([
+            'name' => 'Checkout view test item',
+            'base_price' => 12,
+            'retail_price' => 12,
+            'base_currency' => 'USD',
+            'stock' => 5,
+            'status' => 'published',
+        ]);
+
+        $this->get(route('products.show', $product))
+            ->assertOk()
+            ->assertSee('Checkout view test item');
+
+        $customer = User::create([
+            'name' => 'Checkout Customer',
+            'email' => 'checkout-customer@example.test',
+            'password' => Hash::make('Strong-Test-Password-123!'),
+            'is_admin' => false,
+            'email_verified_at' => now(),
+        ]);
+        $this->actingAs($customer)
+            ->withSession(['cart' => [(string) $product->id => 1], 'currency' => 'USD'])
+            ->get('/checkout')
+            ->assertOk()
+            ->assertSee('Delivery information')
+            ->assertSee('Continue to secure card payment');
+    }
+
 }
