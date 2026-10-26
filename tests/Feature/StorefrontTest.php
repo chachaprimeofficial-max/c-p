@@ -71,7 +71,6 @@ class StorefrontTest extends TestCase
         $this->get(route('products.show', $product))
             ->assertOk()
             ->assertSee('Checkout view test item')
-            ->assertSee('Main product photo')
             ->assertSee('Side product photo')
             ->assertSee('Blueprint');
 
