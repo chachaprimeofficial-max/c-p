@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\GroupBuyCampaignController;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerAuthController;
+use App\Http\Controllers\CustomerOrderController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\StorefrontController;
 use App\Http\Controllers\StripeWebhookController;
@@ -39,7 +40,12 @@ Route::prefix('account')->name('account.')->group(function () {
     Route::get('/verify-email', [CustomerAuthController::class, 'showVerify'])->name('verify');
     Route::post('/verify-email', [CustomerAuthController::class, 'verify'])->name('verify.submit');
     Route::post('/verify-email/resend', [CustomerAuthController::class, 'resend'])->name('verify.resend');
-    Route::post('/logout', [CustomerAuthController::class, 'logout'])->middleware('auth')->name('logout');
+    Route::middleware(['auth', 'customer'])->group(function () {
+        Route::get('/orders', [CustomerOrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [CustomerOrderController::class, 'show'])->name('orders.show');
+        Route::post('/orders/{order}/return', [CustomerOrderController::class, 'requestReturn'])->name('orders.return');
+        Route::post('/logout', [CustomerAuthController::class, 'logout'])->name('logout');
+    });
 });
 
 Route::prefix('admin')->name('admin.')->group(function () {
