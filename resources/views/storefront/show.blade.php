@@ -14,8 +14,8 @@
 <section class="product-detail-layout">
     <div class="detail-gallery">
         <div class="detail-main-image">
-            @if($product->media->where('type', 'image')->first())
-                <img src="{{ asset('storage/'.$product->media->where('type', 'image')->first()->path) }}" alt="{{ $product->name }}">
+            @if($mainImage)
+                <img src="{{ asset('storage/'.$mainImage->path) }}" alt="{{ $mainImage->alt_text ?: $product->name }}">
             @else
                 <div class="product-placeholder detail-placeholder"><span>CP</span></div>
             @endif
