@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\EnsureCustomer;
 use App\Http\Middleware\SetLocaleAndCurrency;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -16,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [SetLocaleAndCurrency::class]);
         $middleware->validateCsrfTokens(except: ['payments/stripe/webhook']);
         $middleware->redirectGuestsTo(fn ($request) => ($request->is('account/*') || $request->is('checkout*')) ? route('account.login') : route('admin.login'));
-        $middleware->alias(['admin' => EnsureAdmin::class]);
+        $middleware->alias(['admin' => EnsureAdmin::class, 'customer' => EnsureCustomer::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
