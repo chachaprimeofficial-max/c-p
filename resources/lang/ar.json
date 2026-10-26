@@ -141,5 +141,16 @@
   "Shipping is estimated at checkout; final carrier and customs charges may need confirmation.": "يُقدّر الشحن عند الدفع؛ وقد يلزم تأكيد رسوم الناقل والجمارك النهائية.",
   "Detailed product information will be provided by our product team.": "سيقدم فريق المنتجات لدينا معلومات مفصلة عن المنتج.",
   "Blueprint": "مخطط المنتج",
-  "Product document": "مستند المنتج"
+  "Product document": "مستند المنتج",
+  "Price per unit": "السعر لكل وحدة",
+  "units": "وحدات",
+  "unit": "وحدة",
+  "participants": "المشاركون",
+  "Ends": "ينتهي",
+  "when target is reached": "عند بلوغ العدد المستهدف",
+  "Ask our team about current group-buy availability and target pricing.": "تواصل مع فريقنا لمعرفة توفر الشراء الجماعي والسعر المستهدف.",
+  "Select a variation": "اختر نوعًا",
+  "available": "متاح",
+  "Secure order details and shipping terms will be confirmed before payment.": "سيتم تأكيد تفاصيل الطلب وشروط الشحن قبل الدفع.",
+  "business days": "أيام عمل"
 }
