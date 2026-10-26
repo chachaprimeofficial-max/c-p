@@ -13,7 +13,7 @@ class GeminiService
         if ($key === '') throw new RuntimeException('Gemini API key is not configured.');
         $model = (string) config('services.gemini.model', 'gemini-2.5-flash');
         $prompt = "Write accurate ecommerce product copy in locale {$locale}. Product name: {$productName}. Seller notes: {$notes}. Return a concise description only. Do not invent certifications, materials, specifications, stock or claims that are not in the notes.";
-        $response = Http::timeout(25)->post("https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key=".urlencode($key), [
+        $response = Http::withHeaders(['x-goog-api-key' => $key])->timeout(25)->post("https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent", [
             'contents' => [['parts' => [['text' => $prompt]]]],
             'generationConfig' => ['temperature' => 0.4, 'maxOutputTokens' => 700],
         ])->throw()->json();
