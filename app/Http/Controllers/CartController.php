@@ -15,8 +15,10 @@ class CartController extends Controller
     {
         $lines = $pricing->lines(session('cart', []), $currencies);
         $subtotal = array_sum(array_column($lines, 'line_total'));
-        $currency = $lines[0]['currency'] ?? $currencies->currentCurrency();
-        return view('storefront.cart', compact('lines', 'subtotal', 'currency'));
+        $currency = $currencies->currentCurrency();
+        $pricingAvailable = collect($lines)->every(fn ($line) => $line['currency'] === $currency);
+        if (!$pricingAvailable) $subtotal = null;
+        return view('storefront.cart', compact('lines', 'subtotal', 'currency', 'pricingAvailable'));
     }
 
     public function add(Request $request, Product $product): RedirectResponse
