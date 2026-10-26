@@ -58,23 +58,30 @@ class OrderController extends Controller
             $order = DB::transaction(function () use ($cart, $data, $currency, $request, $currencies, $shippingCalculator) {
                 $lines = [];
                 $subtotal = 0.0;
-                foreach ($cart as $productId => $quantity) {
-                    $product = Product::with(['priceTiers', 'shippingTemplate'])->whereKey($productId)->where('status', 'published')->lockForUpdate()->firstOrFail();
+                foreach ($cart as $cartKey => $quantity) {
+                    $keyParts = explode(':', (string) $cartKey, 2);
+                    $productId = (int) ($keyParts[0] ?? 0);
+                    $variantId = isset($keyParts[1]) ? (int) $keyParts[1] : 0;
+                    $product = Product::with(['priceTiers', 'shippingTemplate', 'variants'])->whereKey($productId)->where('status', 'published')->lockForUpdate()->firstOrFail();
+                    $variant = $variantId ? $product->variants->firstWhere('id', $variantId) : null;
+                    if ($variantId && !$variant) throw new \RuntimeException('A selected product variation is no longer available.');
                     $quantity = (int) $quantity;
-                    if ($quantity < 1 || $quantity > $product->stock) throw new \RuntimeException('Stock changed for '.$product->name.'. Please update your cart.');
+                    $available = $variant ? (int) $variant->stock : (int) $product->stock;
+                    if ($quantity < 1 || $quantity > $available) throw new \RuntimeException('Stock changed for '.$product->name.'. Please update your cart.');
                     $sourcePrice = (float) $product->retail_price;
                     $tier = null;
                     if ($product->b2b_enabled) {
                         $tier = $product->priceTiers->first(fn ($tier) => $quantity >= $tier->min_quantity && ($tier->max_quantity === null || $quantity <= $tier->max_quantity));
                         if ($tier) $sourcePrice = (float) $tier->unit_price;
                     }
+                    if ($variant) $sourcePrice += (float) $variant->price_adjustment;
                     $sourceCurrency = $tier?->currency ?? $product->base_currency ?? 'USD';
                     $converted = $currencies->convert($sourcePrice, $sourceCurrency, $currency);
                     if (!$converted['converted'] || $converted['currency'] !== $currency) throw new \RuntimeException('Live exchange rates are temporarily unavailable for '.$currency.'. Please try again later.');
                     $unitPrice = (float) $converted['amount'];
                     $lineTotal = round($unitPrice * $quantity, 2);
                     $subtotal += $lineTotal;
-                    $lines[] = ['product' => $product, 'quantity' => $quantity, 'unit_price' => $unitPrice, 'line_total' => $lineTotal];
+                    $lines[] = ['product' => $product, 'variant' => $variant, 'quantity' => $quantity, 'unit_price' => $unitPrice, 'line_total' => $lineTotal];
                 }
                 $shippingTotal = $shippingCalculator->calculate($lines, $data['shipping_country'], $currency, $currencies);
                 $order = Order::create([
@@ -88,12 +95,18 @@ class OrderController extends Controller
                     'shipping_address' => $data['shipping_address'], 'customer_notes' => $data['customer_notes'] ?? null,
                 ]);
                 foreach ($lines as $line) {
+                    $variant = $line['variant'];
+                    $attributes = $line['product']->attributes ?? [];
+                    if ($variant) {
+                        $attributes = array_merge($attributes, ['variant_id' => $variant->id, 'variant_name' => $variant->name, 'variant_attributes' => $variant->attributes ?? []]);
+                    }
                     OrderItem::create([
                         'order_id' => $order->id, 'product_id' => $line['product']->id,
-                        'product_name' => $line['product']->name, 'sku' => $line['product']->sku,
+                        'product_name' => $line['product']->name.($variant ? ' — '.$variant->name : ''),
+                        'sku' => $variant?->sku ?? $line['product']->sku,
                         'quantity' => $line['quantity'], 'unit_price' => $line['unit_price'],
                         'line_total' => $line['line_total'], 'currency' => $currency,
-                        'attributes' => $line['product']->attributes,
+                        'attributes' => $attributes,
                     ]);
                 }
                 return $order;
