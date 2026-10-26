@@ -139,5 +139,7 @@
   "Confirm before ordering": "يرجى التأكيد قبل الطلب",
   "Product information available": "معلومات المنتج متاحة",
   "Shipping is estimated at checkout; final carrier and customs charges may need confirmation.": "يُقدّر الشحن عند الدفع؛ وقد يلزم تأكيد رسوم الناقل والجمارك النهائية.",
-  "Detailed product information will be provided by our product team.": "سيقدم فريق المنتجات لدينا معلومات مفصلة عن المنتج."
+  "Detailed product information will be provided by our product team.": "سيقدم فريق المنتجات لدينا معلومات مفصلة عن المنتج.",
+  "Blueprint": "مخطط المنتج",
+  "Product document": "مستند المنتج"
 }
