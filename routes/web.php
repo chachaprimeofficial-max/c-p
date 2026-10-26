@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ReturnController as AdminReturnController;
 use App\Http\Controllers\Admin\SystemController;
+use App\Http\Controllers\Admin\ShippingTemplateController;
 use App\Http\Controllers\Admin\GroupBuyCampaignController;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\CartController;
@@ -68,6 +69,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('returns', AdminReturnController::class)->only(['index', 'update']);
         Route::resource('customers', CustomerController::class)->only(['index', 'show']);
         Route::resource('group-buy', GroupBuyCampaignController::class)->parameters(['group-buy' => 'groupBuyCampaign'])->except(['show']);
+        Route::resource('shipping', ShippingTemplateController::class)->parameters(['shipping' => 'shipping'])->except(['show']);
         Route::resource('categories', CategoryController::class)->except(['show', 'create']);
         Route::resource('brands', BrandController::class)->only(['index', 'store', 'destroy']);
     });
