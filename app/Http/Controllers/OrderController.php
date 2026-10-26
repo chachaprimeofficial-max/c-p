@@ -24,8 +24,11 @@ class OrderController extends Controller
         abort_if($request->user()->is_admin, 403);
         if (empty(session('cart', []))) return redirect()->route('cart.index')->withErrors(['cart' => 'Your cart is empty.']);
         $lines = $pricing->lines(session('cart', []), $currencies);
+        $currency = $currencies->currentCurrency();
+        if (!$lines || !collect($lines)->every(fn ($line) => $line['currency'] === $currency)) {
+            return redirect()->route('cart.index')->withErrors(['cart' => 'The selected currency cannot currently be applied to every cart item. Please try again when exchange rates are available.']);
+        }
         $subtotal = array_sum(array_column($lines, 'line_total'));
-        $currency = $lines[0]['currency'] ?? $currencies->currentCurrency();
         return view('storefront.checkout', compact('lines', 'subtotal', 'currency'));
     }
 
