@@ -85,6 +85,9 @@
                         <strong>{{ $campaign->title }}</strong>
                         <span>{{ $campaign->display_currency }} {{ number_format((float) $campaign->display_price, 2) }} / {{ __('unit') }}</span>
                         <small>{{ $campaign->current_participants }} / {{ $campaign->target_participants }} {{ __('participants') }} · {{ __('Ends') }} {{ $campaign->ends_at?->format('M j, Y') ?? __('when target is reached') }}</small>
+                        <div class="group-buy-progress" role="progressbar" aria-label="{{ __('Group-buy participants') }}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ min(100, (int) round($campaign->current_participants * 100 / max(1, $campaign->target_participants))) }}">
+                            <span style="width: {{ min(100, (int) round($campaign->current_participants * 100 / max(1, $campaign->target_participants))) }}%"></span>
+                        </div>
                     </div>
                 @empty
                     <p>{{ __('Ask our team about current group-buy availability and target pricing.') }}</p>
