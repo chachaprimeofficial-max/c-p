@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -12,6 +13,8 @@ class User extends Authenticatable
 
     protected $fillable = ['name', 'email', 'password', 'is_admin', 'preferred_locale', 'preferred_currency'];
     protected $hidden = ['password', 'remember_token'];
+
+    public function orders(): HasMany { return $this->hasMany(Order::class); }
 
     protected function casts(): array
     {
