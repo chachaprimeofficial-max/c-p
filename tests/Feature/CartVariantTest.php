@@ -85,4 +85,35 @@ class CartVariantTest extends TestCase
         $this->assertEquals(12.00, $lines[0]['unit_price']);
         $this->assertEquals(24.00, $lines[0]['line_total']);
     }
+    public function test_expired_group_buy_cart_lines_are_removed_with_a_notice(): void
+    {
+        $product = Product::create([
+            'name' => 'Expired offer product',
+            'base_price' => 20,
+            'retail_price' => 20,
+            'base_currency' => 'USD',
+            'stock' => 8,
+            'group_buy_enabled' => true,
+            'status' => 'published',
+        ]);
+        $campaign = GroupBuyCampaign::create([
+            'product_id' => $product->id,
+            'title' => 'Expired offer',
+            'unit_price' => 12,
+            'currency' => 'USD',
+            'target_participants' => 5,
+            'current_participants' => 1,
+            'starts_at' => now()->subDays(2),
+            'ends_at' => now()->subDay(),
+            'status' => 'active',
+        ]);
+
+        $this->withSession(['cart' => [$product->id.':0:'.$campaign->id => 1]])
+            ->get('/cart')
+            ->assertOk()
+            ->assertSee('Some items were removed because the product or group-buy offer is no longer available.');
+
+        $this->assertSessionHas('cart', []);
+    }
+
 }
