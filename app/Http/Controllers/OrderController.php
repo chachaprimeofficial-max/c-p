@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Services\CartPricingService;
 use App\Services\CurrencyService;
 use App\Services\StripeCheckoutService;
 use Illuminate\Http\RedirectResponse;
@@ -16,11 +17,14 @@ use Throwable;
 
 class OrderController extends Controller
 {
-    public function checkout(Request $request): View|RedirectResponse
+    public function checkout(Request $request, CartPricingService $pricing, CurrencyService $currencies): View|RedirectResponse
     {
         abort_if($request->user()->is_admin, 403);
         if (empty(session('cart', []))) return redirect()->route('cart.index')->withErrors(['cart' => 'Your cart is empty.']);
-        return view('storefront.checkout', ['cart' => session('cart', [])]);
+        $lines = $pricing->lines(session('cart', []), $currencies);
+        $subtotal = array_sum(array_column($lines, 'line_total'));
+        $currency = $lines[0]['currency'] ?? $currencies->currentCurrency();
+        return view('storefront.checkout', compact('lines', 'subtotal', 'currency'));
     }
 
     public function place(Request $request, CurrencyService $currencies, StripeCheckoutService $stripe): RedirectResponse
