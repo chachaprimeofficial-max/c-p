@@ -7,6 +7,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductPriceTier;
+use App\Models\ShippingTemplate;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +29,7 @@ class ProductController extends Controller
 
     public function create(): View
     {
-        return view('admin.products.create', ['categories' => Category::where('is_active', true)->orderBy('name')->get(), 'brands' => Brand::where('is_active', true)->orderBy('name')->get()]);
+        return view('admin.products.create', ['categories' => Category::where('is_active', true)->orderBy('name')->get(), 'brands' => Brand::where('is_active', true)->orderBy('name')->get(), 'shippingTemplates' => ShippingTemplate::where('is_active', true)->orderBy('name')->get()]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -54,6 +55,7 @@ class ProductController extends Controller
             'package_weight_lb' => ['nullable', 'numeric', 'min:0'],
             'liters' => ['nullable', 'numeric', 'min:0'],
             'package_dimensions' => ['nullable', 'string', 'max:120'],
+            'shipping_template_id' => ['nullable', 'integer', 'exists:shipping_templates,id'],
             'shipping_template' => ['nullable', 'string', 'max:150'],
             'handling_time_days' => ['nullable', 'integer', 'min:0', 'max:90'],
             'delivery_method' => ['nullable', 'in:courier,freight,pickup,digital'],
@@ -91,6 +93,7 @@ class ProductController extends Controller
 
         $data['slug'] = Str::slug($data['name']).'-'.Str::lower(Str::random(5));
         $data['base_currency'] = $data['currency'] ?? 'USD';
+        $data['shipping_template'] = !empty($data['shipping_template_id']) ? (ShippingTemplate::find($data['shipping_template_id'])?->name) : null;
         $data['selling_countries'] = collect(explode(',', (string) ($data['selling_countries_text'] ?? '')))->map(fn ($v) => strtoupper(trim($v)))->filter(fn ($v) => preg_match('/^[A-Z]{2}$/', $v))->unique()->values()->all();
         $data['tracking_numbers'] = collect(explode(',', (string) ($data['tracking_numbers_text'] ?? '')))->map(fn ($v) => trim($v))->filter()->values()->all();
         $data['b2b_enabled'] = $request->boolean('b2b_enabled');
