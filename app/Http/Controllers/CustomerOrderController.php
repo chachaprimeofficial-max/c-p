@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderReturn;
+use App\Services\OrderEmailService;
+use Throwable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -23,7 +25,7 @@ class CustomerOrderController extends Controller
         return view('account.orders.show', compact('order'));
     }
 
-    public function requestReturn(Request $request, Order $order): RedirectResponse
+    public function requestReturn(Request $request, Order $order, OrderEmailService $emails): RedirectResponse
     {
         abort_unless($order->user_id === $request->user()->id, 404);
         if ($order->payment_status !== 'paid' || $order->order_status !== 'delivered') {
@@ -36,7 +38,8 @@ class CustomerOrderController extends Controller
             'reason' => ['required', 'in:damaged,wrong_item,not_as_described,changed_mind,other'],
             'details' => ['nullable', 'string', 'max:3000'],
         ]);
-        OrderReturn::create(['order_id' => $order->id, 'user_id' => $request->user()->id, 'reason' => $data['reason'], 'details' => $data['details'] ?? null, 'status' => 'requested']);
+        $return = OrderReturn::create(['order_id' => $order->id, 'user_id' => $request->user()->id, 'reason' => $data['reason'], 'details' => $data['details'] ?? null, 'status' => 'requested']);
+        try { $emails->returnRequested($return); } catch (Throwable $exception) { report($exception); }
         return redirect()->route('account.orders.show', $order)->with('success', 'Your return request has been submitted for review.');
     }
 }
