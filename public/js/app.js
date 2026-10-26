@@ -58,6 +58,28 @@ document.addEventListener('DOMContentLoaded', () => {
       if (preview) preview.textContent = input.files.length ? input.files.length + ' image(s) selected' : '';
     });
   });
+
+  const variantSelect = document.querySelector('select[name="variant_id"]');
+  const quantityInput = document.querySelector('input[name="quantity"]');
+  if (variantSelect && quantityInput) {
+    const defaultMax = quantityInput.max;
+    const syncVariantStock = () => {
+      const selected = variantSelect.selectedOptions[0];
+      if (selected && selected.value && selected.dataset.stock !== undefined) {
+        const stock = Math.max(0, Number(selected.dataset.stock) || 0);
+        quantityInput.max = String(stock);
+        quantityInput.disabled = stock < 1;
+        if (stock > 0 && Number(quantityInput.value) > stock) quantityInput.value = String(stock);
+        if (stock < 1) quantityInput.value = '1';
+      } else {
+        quantityInput.max = defaultMax;
+        quantityInput.disabled = false;
+      }
+    };
+    variantSelect.addEventListener('change', syncVariantStock);
+    syncVariantStock();
+  }
+
 });
 
   const aiButton = document.getElementById('aiGenerateCopy');
