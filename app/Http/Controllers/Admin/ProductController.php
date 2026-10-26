@@ -49,6 +49,7 @@ class ProductController extends Controller
             'currency' => ['nullable', 'in:PKR,CNY,USD,EUR,GBP,JPY,AED,SAR,TRY'],
             'stock' => ['required', 'integer', 'min:0'],
             'status' => ['required', 'in:draft,published,archived'],
+            'shipping_template_id' => ['nullable', 'integer', 'exists:shipping_templates,id'],
             'selling_countries_text' => ['nullable', 'string', 'max:1000'],
             'sku' => ['nullable', 'string', 'max:80', 'unique:products,sku'],
             'upc' => ['nullable', 'string', 'max:32'],
@@ -213,6 +214,7 @@ class ProductController extends Controller
 
         $data['slug'] = Str::slug($data['name']).'-'.Str::lower(Str::random(5));
         $data['base_currency'] = $data['currency'];
+        $data['shipping_template'] = !empty($data['shipping_template_id']) ? (ShippingTemplate::find($data['shipping_template_id'])?->name) : null;
         $data['selling_countries'] = collect(explode(',', (string) ($data['selling_countries_text'] ?? '')))->map(fn ($v) => strtoupper(trim($v)))->filter(fn ($v) => preg_match('/^[A-Z]{2}$/', $v))->unique()->values()->all();
         $data['tracking_numbers'] = collect(explode(',', (string) ($data['tracking_numbers_text'] ?? '')))->map(fn ($v) => trim($v))->filter()->values()->all();
         $data['b2b_enabled'] = $request->boolean('b2b_enabled');
