@@ -63,7 +63,8 @@ class StorefrontController extends Controller
             $tier->setAttribute('display_currency', $converted['currency']);
             $tier->setAttribute('currency_converted', $converted['converted']);
         }
-        return view('storefront.show', compact('product', 'activeCampaigns'));
+        $hasPurchasableStock = $product->stock > 0 || $product->variants->where('stock', '>', 0)->isNotEmpty();
+        return view('storefront.show', compact('product', 'activeCampaigns', 'hasPurchasableStock'));
     }
 
     private function decorateProduct(Product $product, CurrencyService $currencies): void
