@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductMedia;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class StorefrontTest extends TestCase
@@ -87,6 +88,60 @@ class StorefrontTest extends TestCase
             ->assertOk()
             ->assertSee('Delivery information')
             ->assertSee('Continue to secure card payment');
+    }
+
+    public function test_admin_can_delete_only_media_belonging_to_the_selected_product(): void
+    {
+        Storage::fake('public');
+        $admin = User::create([
+            'name' => 'Media Administrator',
+            'email' => 'media-admin@example.test',
+            'password' => Hash::make('Strong-Test-Password-123!'),
+            'is_admin' => true,
+            'email_verified_at' => now(),
+        ]);
+        $product = Product::create([
+            'name' => 'Media test product',
+            'base_price' => 5,
+            'retail_price' => 5,
+            'base_currency' => 'USD',
+            'stock' => 2,
+            'status' => 'draft',
+        ]);
+        $otherProduct = Product::create([
+            'name' => 'Other media product',
+            'base_price' => 5,
+            'retail_price' => 5,
+            'base_currency' => 'USD',
+            'stock' => 2,
+            'status' => 'draft',
+        ]);
+        Storage::disk('public')->put('products/'.$product->id.'/photo.jpg', 'fake-image');
+        $media = ProductMedia::create([
+            'product_id' => $product->id,
+            'type' => 'image',
+            'path' => 'products/'.$product->id.'/photo.jpg',
+            'alt_text' => 'Test photo',
+            'sort_order' => 0,
+        ]);
+        $otherMedia = ProductMedia::create([
+            'product_id' => $otherProduct->id,
+            'type' => 'image',
+            'path' => 'products/'.$otherProduct->id.'/photo.jpg',
+            'alt_text' => 'Other photo',
+            'sort_order' => 0,
+        ]);
+
+        $this->actingAs($admin)
+            ->delete(route('admin.products.media.destroy', [$product, $otherMedia]))
+            ->assertNotFound();
+        $this->assertDatabaseHas('product_media', ['id' => $otherMedia->id]);
+
+        $this->actingAs($admin)
+            ->delete(route('admin.products.media.destroy', [$product, $media]))
+            ->assertRedirect(route('admin.products.edit', $product));
+        $this->assertDatabaseMissing('product_media', ['id' => $media->id]);
+        Storage::disk('public')->assertMissing('products/'.$product->id.'/photo.jpg');
     }
 
 }
