@@ -67,6 +67,16 @@ class OrderController extends Controller
                     $product = Product::with(['priceTiers', 'shippingTemplate', 'variants'])->whereKey($productId)->where('status', 'published')->lockForUpdate()->firstOrFail();
                     $variant = $variantId ? $product->variants->firstWhere('id', $variantId) : null;
                     if ($variantId && !$variant) throw new \RuntimeException('A selected product variation is no longer available.');
+                    $campaign = null;
+                    if ($campaignId) {
+                        $campaign = GroupBuyCampaign::whereKey($campaignId)->where('product_id', $product->id)->lockForUpdate()->first();
+                        $campaignAvailable = $campaign
+                            && $campaign->status === 'active'
+                            && (!$campaign->starts_at || $campaign->starts_at->isPast())
+                            && (!$campaign->ends_at || $campaign->ends_at->isFuture())
+                            && $campaign->current_participants < $campaign->target_participants;
+                        if (!$campaignAvailable) throw new \RuntimeException('A selected group-buy offer has expired or reached its participant target. Please return to the product page and choose another price.');
+                    }
                     $quantity = (int) $quantity;
                     $available = $variant ? (int) $variant->stock : (int) $product->stock;
                     if ($quantity < 1 || $quantity > $available) throw new \RuntimeException('Stock changed for '.$product->name.'. Please update your cart.');
