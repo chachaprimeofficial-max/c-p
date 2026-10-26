@@ -1,0 +1,8 @@
+@extends('admin.layout')
+@section('title','Customers')
+@section('breadcrumb','Customers')
+@section('content')
+<div class="page-heading"><div><div class="eyebrow">CUSTOMER RELATIONSHIPS</div><h1>Customers</h1><p>Review registered customer accounts and their order history.</p></div></div>
+<section class="panel product-list-panel"><form class="list-toolbar" method="get"><div class="list-search"><span>⌕</span><input name="q" value="{{ request('q') }}" placeholder="Search customer name or email"></div><button class="btn btn-secondary">Search</button></form>
+@if($customers->isNotEmpty())<div class="table-scroll"><table class="admin-table"><thead><tr><th>Customer</th><th>Email</th><th>Email verified</th><th>Orders</th><th>Registered</th><th></th></tr></thead><tbody>@foreach($customers as $customer)<tr><td><div class="table-product"><span class="table-product-thumb">{{ mb_substr($customer->name,0,1) }}</span><span><strong>{{ $customer->name }}</strong><small>Customer #{{ $customer->id }}</small></span></div></td><td>{{ $customer->email }}</td><td><span class="status-pill {{ $customer->email_verified_at?'status-published':'status-draft' }}">{{ $customer->email_verified_at?'Verified':'Unverified' }}</span></td><td>{{ $customer->orders_count }}</td><td>{{ $customer->created_at->format('Y-m-d') }}</td><td><a class="table-action" href="{{ route('admin.customers.show',$customer) }}">View</a></td></tr>@endforeach</tbody></table></div><div class="pagination-wrap">{{ $customers->links() }}</div>@else<div class="panel-empty"><span class="empty-product-icon">♙</span><h3>No customers found</h3><p>Customer accounts will appear here after registration.</p></div>@endif</section>
+@endsection
