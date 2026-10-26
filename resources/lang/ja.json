@@ -127,7 +127,17 @@
   "product line(s)": "商品明細",
   "Edit cart": "カートを編集",
   "Qty": "数量",
-  "To be confirmed": "確認待ち",
+  "To be confirmed": "要確認",
   "Subtotal before shipping": "送料別小計",
-  "By continuing, you agree to confirm final shipping charges and order terms before fulfillment.": "続行すると、発送前に最終送料と注文条件を確認することに同意したものとみなされます。"
+  "By continuing, you agree to confirm final shipping charges and order terms before fulfillment.": "続行すると、発送前に最終送料と注文条件を確認することに同意したものとみなされます。",
+  "unit retail": "小売単価",
+  "Currently unavailable": "現在購入できません",
+  "Description": "商品説明",
+  "Product details": "商品詳細",
+  "Brand": "ブランド",
+  "Not specified": "未指定",
+  "Confirm before ordering": "注文前にご確認ください",
+  "Product information available": "商品情報あり",
+  "Shipping is estimated at checkout; final carrier and customs charges may need confirmation.": "送料はチェックアウト時に概算されます。最終的な配送業者料金や関税は確認が必要な場合があります。",
+  "Detailed product information will be provided by our product team.": "詳細な商品情報は商品チームが提供します。"
 }
