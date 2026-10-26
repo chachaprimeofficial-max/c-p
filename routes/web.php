@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ReturnController as AdminReturnController;
 use App\Http\Controllers\Admin\SystemController;
@@ -65,6 +66,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/localization', [SystemController::class, 'localization'])->name('localization');
         Route::get('/settings', [SystemController::class, 'settings'])->name('settings');
         Route::resource('products', AdminProductController::class)->except(['show']);
+        Route::get('/products/{product}/variants', [ProductVariantController::class, 'index'])->name('products.variants.index');
+        Route::post('/products/{product}/variants', [ProductVariantController::class, 'store'])->name('products.variants.store');
+        Route::put('/products/{product}/variants/{variant}', [ProductVariantController::class, 'update'])->name('products.variants.update');
+        Route::delete('/products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])->name('products.variants.destroy');
         Route::resource('orders', AdminOrderController::class)->only(['index', 'show', 'update']);
         Route::resource('returns', AdminReturnController::class)->only(['index', 'update']);
         Route::resource('customers', CustomerController::class)->only(['index', 'show']);
