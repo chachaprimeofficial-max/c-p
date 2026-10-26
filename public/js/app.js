@@ -59,3 +59,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+  const aiButton = document.getElementById('aiGenerateCopy');
+  if (aiButton) {
+    aiButton.addEventListener('click', async () => {
+      const name = document.querySelector('input[name="name"]')?.value.trim() || '';
+      const notes = document.getElementById('aiNotes')?.value.trim() || document.querySelector('textarea[name="specification"]')?.value.trim() || '';
+      const description = document.getElementById('productDescription');
+      const status = document.getElementById('aiGenerateStatus');
+      const token = document.querySelector('meta[name="csrf-token"]')?.content || '';
+      if (!name || !notes) {
+        if (status) status.textContent = 'Enter the product name and some factual notes first.';
+        return;
+      }
+      aiButton.disabled = true;
+      aiButton.textContent = 'Generating with Gemini…';
+      if (status) status.textContent = 'Generating a draft. Please review all claims before saving.';
+      let locale = (document.documentElement.lang || 'en').toLowerCase();
+      if (locale === 'zh-cn') locale = 'zh_CN';
+      try {
+        const response = await fetch('/admin/ai/product-copy', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': token},
+          body: JSON.stringify({name, notes, locale})
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.message || 'AI request failed.');
+        if (description) description.value = payload.description || '';
+        if (status) status.textContent = 'Draft generated. Review and edit it before saving.';
+      } catch (error) {
+        if (status) status.textContent = error.message || 'Could not generate the draft. Check the AI settings.';
+      } finally {
+        aiButton.disabled = false;
+        aiButton.textContent = '✦ Generate product description with Gemini';
+      }
+    });
+  }
