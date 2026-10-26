@@ -24,6 +24,8 @@ class ProductController extends Controller
             $query->where(fn ($q) => $q->where('name', 'like', '%'.$term.'%')->orWhere('sku', 'like', '%'.$term.'%')->orWhere('product_code', 'like', '%'.$term.'%'));
         }
         if ($request->filled('status')) $query->where('status', $request->query('status'));
+        if ($request->boolean('b2b')) $query->where('b2b_enabled', true);
+        if ($request->boolean('group_buy')) $query->where('group_buy_enabled', true);
         return view('admin.products.index', ['products' => $query->paginate(15)->withQueryString()]);
     }
 
