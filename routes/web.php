@@ -66,6 +66,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/localization', [SystemController::class, 'localization'])->name('localization');
         Route::get('/settings', [SystemController::class, 'settings'])->name('settings');
         Route::resource('products', AdminProductController::class)->except(['show']);
+        Route::delete('/products/{product}/media/{media}', [AdminProductController::class, 'destroyMedia'])->name('products.media.destroy');
         Route::get('/products/{product}/variants', [ProductVariantController::class, 'index'])->name('products.variants.index');
         Route::post('/products/{product}/variants', [ProductVariantController::class, 'store'])->name('products.variants.store');
         Route::put('/products/{product}/variants/{variant}', [ProductVariantController::class, 'update'])->name('products.variants.update');
