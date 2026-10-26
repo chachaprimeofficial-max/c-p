@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Models\Product;
+use App\Models\ProductMedia;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -62,9 +63,17 @@ class StorefrontTest extends TestCase
             'status' => 'published',
         ]);
 
+        ProductMedia::create(['product_id' => $product->id, 'type' => 'image', 'path' => 'products/test/main.jpg', 'alt_text' => 'Main product photo', 'sort_order' => 0]);
+        ProductMedia::create(['product_id' => $product->id, 'type' => 'image', 'path' => 'products/test/side.jpg', 'alt_text' => 'Side product photo', 'sort_order' => 1]);
+        ProductMedia::create(['product_id' => $product->id, 'type' => 'video', 'path' => 'products/test/demo.mp4', 'sort_order' => 99]);
+        ProductMedia::create(['product_id' => $product->id, 'type' => 'blueprint', 'path' => 'products/test/blueprint.pdf', 'sort_order' => 0]);
+
         $this->get(route('products.show', $product))
             ->assertOk()
-            ->assertSee('Checkout view test item');
+            ->assertSee('Checkout view test item')
+            ->assertSee('Main product photo')
+            ->assertSee('Side product photo')
+            ->assertSee('Blueprint');
 
         $customer = User::create([
             'name' => 'Checkout Customer',
