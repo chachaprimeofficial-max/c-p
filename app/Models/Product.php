@@ -18,7 +18,7 @@ class Product extends Model
         'base_price', 'list_price', 'retail_price', 'base_currency', 'b2b_enabled', 'group_buy_enabled',
         'stock', 'selling_countries', 'upc', 'gtin', 'sku', 'qr_code_number',
         'product_weight_lb', 'package_weight_lb', 'liters', 'package_dimensions', 'attributes',
-        'has_variations', 'shipping_template', 'handling_time_days', 'delivery_method',
+        'has_variations', 'shipping_template', 'shipping_template_id', 'handling_time_days', 'delivery_method',
         'supplier_name', 'supplier_contact', 'tracking_numbers', 'courier_name',
         'return_address', 'return_policy', 'warranty', 'status', 'featured',
     ];
@@ -45,6 +45,7 @@ class Product extends Model
     }
 
     public function category(): BelongsTo { return $this->belongsTo(Category::class); }
+    public function shippingTemplate(): BelongsTo { return $this->belongsTo(ShippingTemplate::class); }
     public function media(): HasMany { return $this->hasMany(ProductMedia::class)->orderBy('sort_order'); }
     public function priceTiers(): HasMany { return $this->hasMany(ProductPriceTier::class)->orderBy('min_quantity'); }
     public function variants(): HasMany { return $this->hasMany(ProductVariant::class); }
