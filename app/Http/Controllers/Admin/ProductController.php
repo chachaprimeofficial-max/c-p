@@ -236,6 +236,7 @@ class ProductController extends Controller
             if (array_key_exists('shipping_template_id', $data)) {
             $data['shipping_template'] = !empty($data['shipping_template_id']) ? ShippingTemplate::find($data['shipping_template_id'])?->name : null;
         }
+        if ($product->variants()->exists()) $data['stock'] = $product->variants()->sum('stock');
         $product->update($data);
             foreach ($request->file('product_images', []) as $index => $image) {
                 $path = $image->store('products/'.$product->id, 'public');
