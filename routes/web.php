@@ -28,7 +28,7 @@ Route::get('/products/{product:slug}', [StorefrontController::class, 'show'])->n
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/{product}/add', [CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
-Route::post('/cart/remove/{cartKey}', [CartController::class, 'remove'])->where('cartKey', '[0-9]+(?::[0-9]+)?')->name('cart.remove');
+Route::post('/cart/remove/{cartKey}', [CartController::class, 'remove'])->where('cartKey', '[0-9]+(?::[0-9]+){0,2}')->name('cart.remove');
 Route::middleware('auth')->group(function () {
     Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
     Route::post('/checkout', [OrderController::class, 'place'])->name('checkout.place');
