@@ -9,16 +9,16 @@
 <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body class="storefront">
-<div class="announcement"><span>Global sourcing from China</span><span>Wholesale prices · Trusted support · Worldwide delivery</span></div>
+<div class="announcement"><span>{{ __('Global sourcing from China') }}</span><span>{{ __('Wholesale prices · Trusted support · Worldwide delivery') }}</span></div>
 <header class="site-header">
 <a class="brand" href="{{ route('home') }}" aria-label="ChachaPrime home"><span class="brand-mark">CP</span><span>CHACHA<span class="brand-light">PRIME</span></span></a>
-<form class="header-search" action="{{ route('products.index') }}" method="get"><span class="search-icon">⌕</span><input type="search" name="q" value="{{ request('q') }}" placeholder="Search products, brands and more..." aria-label="Search products"><button type="submit">Search</button></form>
+<form class="header-search" action="{{ route('products.index') }}" method="get"><span class="search-icon">⌕</span><input type="search" name="q" value="{{ request('q') }}" placeholder="{{ __('Search products, brands and more...') }}" aria-label="Search products"><button type="submit">{{ __('Search') }}</button></form>
 <div class="header-actions">
 <label class="header-select"><span>Language</span><select aria-label="Language" onchange="if(this.value) location.href='/locale/'+this.value">@foreach(config('marketplace.locales') as $code => $name)<option value="{{ $code }}" @selected(session('locale', app()->getLocale()) === $code)>{{ $name }}</option>@endforeach</select></label>
 <label class="header-select"><span>Currency</span><select aria-label="Currency" onchange="if(this.value) location.href='/currency/'+this.value">@foreach(config('marketplace.currencies') as $code => $currency)<option value="{{ $code }}" @selected(session('currency', 'USD') === $code)>{{ $code }}</option>@endforeach</select></label>
-<a class="header-account" href="{{ route('account.login') }}"><span class="account-icon">♙</span><span>Account<small>Sign in</small></span></a>
+<a class="header-account" href="{{ route('account.login') }}"><span class="account-icon">♙</span><span>{{ __('Account') }}<small>{{ __('Sign in') }}</small></span></a>
 </div></header>
-<nav class="main-nav"><a href="{{ route('products.index') }}">All products</a><a href="{{ route('products.index', ['b2b' => 1]) }}">Wholesale & B2B</a><a href="{{ route('products.index', ['group_buy' => 1]) }}">Group buying</a><a href="#categories">Categories</a><a href="#benefits">Why ChachaPrime</a><span class="nav-spacer"></span><span class="nav-note">China sourcing, globally connected</span></nav>
+<nav class="main-nav"><a href="{{ route('products.index') }}">{{ __('All products') }}</a><a href="{{ route('products.index', ['b2b' => 1]) }}">{{ __('Wholesale & B2B') }}</a><a href="{{ route('products.index', ['group_buy' => 1]) }}">{{ __('Group buying') }}</a><a href="#categories">{{ __('Categories') }}</a><a href="#benefits">{{ __('Why ChachaPrime') }}</a><span class="nav-spacer"></span><span class="nav-note">China sourcing, globally connected</span></nav>
 <main>@yield('content')</main>
 <footer class="site-footer"><div class="footer-main">
 <div class="footer-brand"><a class="brand brand-inverse" href="{{ route('home') }}"><span class="brand-mark">CP</span><span>CHACHA<span class="brand-light">PRIME</span></span></a><p>Your bridge to quality products and trusted sourcing from China.</p></div>
