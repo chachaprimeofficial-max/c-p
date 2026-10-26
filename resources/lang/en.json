@@ -129,5 +129,15 @@
   "Qty": "Qty",
   "To be confirmed": "To be confirmed",
   "Subtotal before shipping": "Subtotal before shipping",
-  "By continuing, you agree to confirm final shipping charges and order terms before fulfillment.": "By continuing, you agree to confirm final shipping charges and order terms before fulfillment."
+  "By continuing, you agree to confirm final shipping charges and order terms before fulfillment.": "By continuing, you agree to confirm final shipping charges and order terms before fulfillment.",
+  "unit retail": "unit retail",
+  "Currently unavailable": "Currently unavailable",
+  "Description": "Description",
+  "Product details": "Product details",
+  "Brand": "Brand",
+  "Not specified": "Not specified",
+  "Confirm before ordering": "Confirm before ordering",
+  "Product information available": "Product information available",
+  "Shipping is estimated at checkout; final carrier and customs charges may need confirmation.": "Shipping is estimated at checkout; final carrier and customs charges may need confirmation.",
+  "Detailed product information will be provided by our product team.": "Detailed product information will be provided by our product team."
 }
