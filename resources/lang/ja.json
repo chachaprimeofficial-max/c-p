@@ -139,5 +139,7 @@
   "Confirm before ordering": "注文前にご確認ください",
   "Product information available": "商品情報あり",
   "Shipping is estimated at checkout; final carrier and customs charges may need confirmation.": "送料はチェックアウト時に概算されます。最終的な配送業者料金や関税は確認が必要な場合があります。",
-  "Detailed product information will be provided by our product team.": "詳細な商品情報は商品チームが提供します。"
+  "Detailed product information will be provided by our product team.": "詳細な商品情報は商品チームが提供します。",
+  "Blueprint": "製品図面",
+  "Product document": "商品資料"
 }
