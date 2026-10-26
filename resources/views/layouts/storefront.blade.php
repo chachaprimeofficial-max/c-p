@@ -16,7 +16,7 @@
 <div class="header-actions">
 <label class="header-select"><span>Language</span><select aria-label="Language" onchange="if(this.value) location.href='/locale/'+this.value">@foreach(config('marketplace.locales') as $code => $name)<option value="{{ $code }}" @selected(session('locale', app()->getLocale()) === $code)>{{ $name }}</option>@endforeach</select></label>
 <label class="header-select"><span>Currency</span><select aria-label="Currency" onchange="if(this.value) location.href='/currency/'+this.value">@foreach(config('marketplace.currencies') as $code => $currency)<option value="{{ $code }}" @selected(session('currency', 'USD') === $code)>{{ $code }}</option>@endforeach</select></label>
-<a class="header-account" href="{{ route('admin.login') }}"><span class="account-icon">♙</span><span>Account<small>Sign in</small></span></a>
+<a class="header-account" href="{{ route('account.login') }}"><span class="account-icon">♙</span><span>Account<small>Sign in</small></span></a>
 </div></header>
 <nav class="main-nav"><a href="{{ route('products.index') }}">All products</a><a href="{{ route('products.index', ['b2b' => 1]) }}">Wholesale & B2B</a><a href="{{ route('products.index', ['group_buy' => 1]) }}">Group buying</a><a href="#categories">Categories</a><a href="#benefits">Why ChachaPrime</a><span class="nav-spacer"></span><span class="nav-note">China sourcing, globally connected</span></nav>
 <main>@yield('content')</main>
