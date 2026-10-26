@@ -153,7 +153,7 @@ class GroupBuyPaymentTest extends TestCase
         $emails = \Mockery::mock(OrderEmailService::class);
         $emails->shouldReceive('paymentConfirmed')->once();
         $stripe = \Mockery::mock(StripeCheckoutService::class);
-        $stripe->shouldReceive('minorUnits')->twice()->with(10.0, 'USD')->andReturn(1000);
+        $stripe->shouldReceive('minorUnits')->once()->with(10.0, 'USD')->andReturn(1000);
         $service = new OrderPaymentService($emails);
         $session = [
             'payment_status' => 'paid',
