@@ -57,7 +57,7 @@ class OrderPaymentService
             ]);
 
             // Count a buyer once per campaign, and only after a verified payment.
-            if ($lockedOrder->user_id) {
+            if (!$manualReview && $lockedOrder->user_id) {
                 foreach ($items as $item) {
                     $campaignId = (int) ($item->attributes['group_buy_campaign_id'] ?? 0);
                     if (!$campaignId) continue;
