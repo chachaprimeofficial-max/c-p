@@ -47,8 +47,9 @@ class CartController extends Controller
                 && $campaign->current_participants < $campaign->target_participants;
             if (!$availableNow) return back()->withErrors(['campaign_id' => 'This group-buy offer is no longer available. Please choose standard pricing or another active offer.']);
         }
-        $cartKey = $product->id.($variant ? ':'.$variant->id : ':0').($campaign ? ':'.$campaign->id : '');
-        if (!$variant && !$campaign) $cartKey = (string) $product->id;
+        $cartKey = $campaign
+            ? $product->id.':'.($variant ? $variant->id : 0).':'.$campaign->id
+            : ($variant ? $product->id.':'.$variant->id : (string) $product->id);
         $available = $variant ? (int) $variant->stock : (int) $product->stock;
         $cart = session('cart', []);
         $quantity = (int) ($cart[$cartKey] ?? 0) + (int) $data['quantity'];
