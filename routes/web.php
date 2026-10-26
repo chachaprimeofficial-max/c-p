@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\GroupBuyCampaignController;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerAuthController;
@@ -51,6 +52,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/ai/product-copy', [AiController::class, 'productCopy'])->name('ai.product-copy');
         Route::resource('products', AdminProductController::class)->except(['show']);
         Route::resource('orders', AdminOrderController::class)->only(['index', 'show', 'update']);
+        Route::resource('group-buy', GroupBuyCampaignController::class)->parameters(['group-buy' => 'groupBuyCampaign'])->except(['show']);
         Route::resource('categories', CategoryController::class)->except(['show', 'create']);
         Route::resource('brands', BrandController::class)->only(['index', 'store', 'destroy']);
     });
