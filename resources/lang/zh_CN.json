@@ -86,5 +86,6 @@
   "cart.": "车。",
   "Review quantities and pricing before proceeding to checkout.": "请在结账前确认商品数量和价格。",
   "Your cart is waiting for something great": "购物车正在等待心仪好物",
-  "Group-buy offer has expired or reached its participant target.": "团购优惠已过期或已达到参与人数目标。"
+  "Group-buy offer has expired or reached its participant target.": "团购优惠已过期或已达到参与人数目标。",
+  "Some items were removed because the product or group-buy offer is no longer available. Please review your cart.": "部分商品已移除，因为商品或团购优惠已不可用。请检查购物车。"
 }
