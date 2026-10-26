@@ -212,7 +212,8 @@ class ProductController extends Controller
             'sub_sub_category_name' => ['nullable', 'string', 'max:150'],
         ]);
 
-        $data['slug'] = Str::slug($data['name']).'-'.Str::lower(Str::random(5));
+        if ($product->name !== $data['name']) $data['slug'] = Str::slug($data['name']).'-'.Str::lower(Str::random(5));
+        else unset($data['slug']);
         $data['base_currency'] = $data['currency'];
         $data['shipping_template'] = !empty($data['shipping_template_id']) ? (ShippingTemplate::find($data['shipping_template_id'])?->name) : null;
         $data['selling_countries'] = collect(explode(',', (string) ($data['selling_countries_text'] ?? '')))->map(fn ($v) => strtoupper(trim($v)))->filter(fn ($v) => preg_match('/^[A-Z]{2}$/', $v))->unique()->values()->all();
