@@ -129,5 +129,15 @@
   "Qty": "数量",
   "To be confirmed": "待确认",
   "Subtotal before shipping": "运费前小计",
-  "By continuing, you agree to confirm final shipping charges and order terms before fulfillment.": "继续操作即表示您同意在履约前确认最终运费和订单条款。"
+  "By continuing, you agree to confirm final shipping charges and order terms before fulfillment.": "继续操作即表示您同意在履约前确认最终运费和订单条款。",
+  "unit retail": "零售单价",
+  "Currently unavailable": "暂不可购买",
+  "Description": "商品描述",
+  "Product details": "商品信息",
+  "Brand": "品牌",
+  "Not specified": "未注明",
+  "Confirm before ordering": "下单前请确认",
+  "Product information available": "商品信息已提供",
+  "Shipping is estimated at checkout; final carrier and customs charges may need confirmation.": "结账时会估算运费；最终承运商费用和关税可能需要确认。",
+  "Detailed product information will be provided by our product team.": "我们的产品团队将提供详细商品信息。"
 }
