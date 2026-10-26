@@ -108,12 +108,11 @@ class CartVariantTest extends TestCase
             'status' => 'active',
         ]);
 
-        $this->withSession(['cart' => [$product->id.':0:'.$campaign->id => 1]])
-            ->get('/cart')
-            ->assertOk()
-            ->assertSee('Some items were removed because the product or group-buy offer is no longer available.');
-
-        $this->assertSessionHas('cart', []);
+        $response = $this->withSession(['cart' => [$product->id.':0:'.$campaign->id => 1]])
+            ->get('/cart');
+        $response->assertOk()
+            ->assertSee('Some items were removed because the product or group-buy offer is no longer available.')
+            ->assertSessionHas('cart', []);
     }
 
 }
