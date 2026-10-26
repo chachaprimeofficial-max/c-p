@@ -6,7 +6,7 @@ A Laravel + MySQL single-vendor commerce platform for sourcing products from Chi
 
 - Responsive storefront and separate admin workspace.
 - 11-section product create/edit workflow for product details, pricing, B2B tiers, categories, attributes, uploads, stock, identifiers, dimensions, shipping, suppliers, tracking, returns and warranty.
-- Retail and B2B quantity pricing, plus admin-managed group-buy campaign display. Group-buy participant joining, campaign-specific checkout pricing and participant-count reconciliation are not yet complete; do not advertise a campaign as an executable discount until that workflow is added.
+- Retail and B2B quantity pricing, plus admin-managed group-buy campaigns with storefront price selection, campaign-specific cart/checkout pricing, and unique participant counting after verified payment. A campaign automatically changes to completed when its participant target is reached. Pending orders created before the target is reached retain the quoted price.
 - Product image/video/document/blueprint storage.
 - Customer registration, email OTP verification, login and customer order history.
 - Cart, checkout order records, Stripe-hosted card checkout integration, signed Stripe webhook verification, payment reconciliation and stock checks.
