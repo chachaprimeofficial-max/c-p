@@ -11,6 +11,7 @@ use App\Models\ShippingTemplate;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -272,6 +273,19 @@ class ProductController extends Controller
         });
 
         return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
+    }
+
+
+    public function destroyMedia(Request $request, Product $product, \App\Models\ProductMedia $media): RedirectResponse
+    {
+        abort_unless((int) $media->product_id === (int) $product->id, 404);
+
+        DB::transaction(function () use ($media): void {
+            Storage::disk('public')->delete($media->path);
+            $media->delete();
+        });
+
+        return redirect()->route('admin.products.edit', $product)->with('success', 'Product media deleted.');
     }
 
     public function destroy(Product $product): RedirectResponse
