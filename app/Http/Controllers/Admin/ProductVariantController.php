@@ -37,7 +37,7 @@ class ProductVariantController extends Controller
             'barcode' => $data['barcode'] ?? null,
             'attributes' => $this->parseAttributes($data['attributes_text'] ?? ''),
         ]);
-        if (!$product->has_variations) $product->update(['has_variations' => true]);
+        $product->update(['has_variations' => true, 'stock' => $product->variants()->sum('stock')]);
         return back()->with('success', 'Product variation added.');
     }
 
@@ -60,6 +60,7 @@ class ProductVariantController extends Controller
             'barcode' => $data['barcode'] ?? null,
             'attributes' => $this->parseAttributes($data['attributes_text'] ?? ''),
         ]);
+        $product->update(['stock' => $product->variants()->sum('stock')]);
         return back()->with('success', 'Product variation updated.');
     }
 
@@ -67,6 +68,7 @@ class ProductVariantController extends Controller
     {
         abort_unless($variant->product_id === $product->id, 404);
         $variant->delete();
+        $product->update(['stock' => $product->variants()->sum('stock')]);
         return back()->with('success', 'Product variation deleted.');
     }
 
