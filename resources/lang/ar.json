@@ -127,7 +127,17 @@
   "product line(s)": "بنود المنتج",
   "Edit cart": "تعديل السلة",
   "Qty": "الكمية",
-  "To be confirmed": "سيتم التأكيد",
+  "To be confirmed": "بانتظار التأكيد",
   "Subtotal before shipping": "المجموع الفرعي قبل الشحن",
-  "By continuing, you agree to confirm final shipping charges and order terms before fulfillment.": "بالمتابعة، توافق على تأكيد رسوم الشحن النهائية وشروط الطلب قبل التنفيذ."
+  "By continuing, you agree to confirm final shipping charges and order terms before fulfillment.": "بالمتابعة، توافق على تأكيد رسوم الشحن النهائية وشروط الطلب قبل التنفيذ.",
+  "unit retail": "سعر التجزئة للوحدة",
+  "Currently unavailable": "غير متاح حاليًا",
+  "Description": "الوصف",
+  "Product details": "تفاصيل المنتج",
+  "Brand": "العلامة التجارية",
+  "Not specified": "غير محدد",
+  "Confirm before ordering": "يرجى التأكيد قبل الطلب",
+  "Product information available": "معلومات المنتج متاحة",
+  "Shipping is estimated at checkout; final carrier and customs charges may need confirmation.": "يُقدّر الشحن عند الدفع؛ وقد يلزم تأكيد رسوم الناقل والجمارك النهائية.",
+  "Detailed product information will be provided by our product team.": "سيقدم فريق المنتجات لدينا معلومات مفصلة عن المنتج."
 }
