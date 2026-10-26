@@ -4,12 +4,14 @@ namespace App\Services;
 
 use App\Models\Order;
 use App\Models\Product;
-use App\Models\ProductVariant;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use Throwable;
 
 class OrderPaymentService
 {
+    public function __construct(private readonly OrderEmailService $emails) {}
+
     public function markPaid(Order $order, array $session, StripeCheckoutService $stripe): Order
     {
         if (($session['payment_status'] ?? null) !== 'paid') return $order;
@@ -18,9 +20,9 @@ class OrderPaymentService
         if (strtoupper((string) ($session['currency'] ?? '')) !== strtoupper($order->currency)) throw new RuntimeException('Payment currency did not match the order.');
         if ((int) ($session['amount_total'] ?? -1) !== $stripe->minorUnits((float) $order->grand_total, $order->currency)) throw new RuntimeException('Payment amount did not match the order total.');
 
-        return DB::transaction(function () use ($order) {
+        [$paidOrder, $newlyPaid] = DB::transaction(function () use ($order) {
             $lockedOrder = Order::whereKey($order->id)->lockForUpdate()->firstOrFail();
-            if ($lockedOrder->payment_status === 'paid') return $lockedOrder;
+            if ($lockedOrder->payment_status === 'paid') return [$lockedOrder, false];
 
             $items = $lockedOrder->items()->get();
             $lockedProducts = [];
@@ -33,17 +35,20 @@ class OrderPaymentService
             }
 
             if (!$manualReview) {
-                foreach ($lockedProducts as $line) {
-                    $line['product']->decrement('stock', $line['quantity']);
-                }
+                foreach ($lockedProducts as $line) $line['product']->decrement('stock', $line['quantity']);
             }
-
             $lockedOrder->update([
                 'payment_status' => 'paid',
                 'order_status' => $manualReview ? 'manual_review' : 'processing',
                 'paid_at' => now(),
             ]);
-            return $lockedOrder->fresh();
+            return [$lockedOrder->fresh(), true];
         });
+
+        if ($newlyPaid) {
+            try { $this->emails->paymentConfirmed($paidOrder); }
+            catch (Throwable $exception) { report($exception); }
+        }
+        return $paidOrder;
     }
 }
