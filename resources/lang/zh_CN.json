@@ -141,5 +141,16 @@
   "Shipping is estimated at checkout; final carrier and customs charges may need confirmation.": "结账时会估算运费；最终承运商费用和关税可能需要确认。",
   "Detailed product information will be provided by our product team.": "我们的产品团队将提供详细商品信息。",
   "Blueprint": "产品蓝图",
-  "Product document": "产品文件"
+  "Product document": "产品文件",
+  "Price per unit": "单价",
+  "units": "件",
+  "unit": "件",
+  "participants": "参与者",
+  "Ends": "结束时间",
+  "when target is reached": "达到目标人数时",
+  "Ask our team about current group-buy availability and target pricing.": "请联系我们的团队了解当前团购情况和目标价格。",
+  "Select a variation": "选择规格",
+  "available": "可用",
+  "Secure order details and shipping terms will be confirmed before payment.": "付款前将确认订单详情和配送条款。",
+  "business days": "个工作日"
 }
