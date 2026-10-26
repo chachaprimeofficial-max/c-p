@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Services\OrderEmailService;
+use Throwable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -28,7 +30,7 @@ class OrderController extends Controller
         return view('admin.orders.show', compact('order'));
     }
 
-    public function update(Request $request, Order $order): RedirectResponse
+    public function update(Request $request, Order $order, OrderEmailService $emails): RedirectResponse
     {
         $data = $request->validate([
             'order_status' => ['required', 'in:pending_payment,processing,shipped,delivered,cancelled,manual_review'],
@@ -39,8 +41,13 @@ class OrderController extends Controller
         if (in_array($data['order_status'], ['processing', 'shipped', 'delivered'], true) && $order->payment_status !== 'paid') {
             return back()->withErrors(['order_status' => 'A payment must be verified before this order can be processed or shipped.']);
         }
+        $wasShipped = $order->order_status === 'shipped';
         if ($data['order_status'] === 'shipped' && !$order->shipped_at) $data['shipped_at'] = now();
         $order->update($data);
+        if ($data['order_status'] === 'shipped' && !$wasShipped) {
+            try { $emails->shipmentUpdated($order->fresh()); }
+            catch (Throwable $exception) { report($exception); }
+        }
         return redirect()->route('admin.orders.show', $order)->with('success', 'Order updated.');
     }
 }
