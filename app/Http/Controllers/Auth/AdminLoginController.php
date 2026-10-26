@@ -18,11 +18,13 @@ class AdminLoginController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
         ]);
+        $credentials['is_admin'] = true;
+
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
             return redirect()->intended(route('admin.dashboard'));
         }
-        return back()->withErrors(['email' => 'The provided credentials could not be verified.'])->onlyInput('email');
+        return back()->withErrors(['email' => 'The provided administrator credentials could not be verified.'])->onlyInput('email');
     }
 
     public function logout(Request $request): RedirectResponse
