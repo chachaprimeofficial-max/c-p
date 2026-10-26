@@ -1,0 +1,15 @@
+@extends('admin.layout')
+@section('title','Product variations')
+@section('breadcrumb','Products / Variations')
+@section('content')
+<div class="page-heading"><div><div class="eyebrow">CATALOGUE OPTIONS</div><h1>Product variations</h1><p>{{ $product->name }} · {{ $product->product_code }}</p></div><a class="btn btn-secondary" href="{{ route('admin.products.edit',$product) }}">← Edit product</a></div>
+@if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
+@if($errors->any())<div class="alert alert-error">{{ $errors->first() }}</div>@endif
+<div class="system-note">Manage separate SKU, stock and price adjustments for color, size, style and other options. Storefront selection and checkout stock deduction must be connected before these variations are sold.</div>
+<section class="panel product-list-panel"><div class="panel-heading"><div><h2>Current variations</h2><p>{{ $product->variants->count() }} configured</p></div></div>
+@if($product->variants->isNotEmpty())<div class="table-scroll"><table class="admin-table"><thead><tr><th>Name</th><th>SKU</th><th>Stock</th><th>Adjustment</th><th>Barcode</th></tr></thead><tbody>@foreach($product->variants as $variant)<tr><td><strong>{{ $variant->name }}</strong><small class="cell-sub">{{ collect($variant->attributes ?? [])->map(fn($value,$key)=>$key.': '.$value)->implode(' · ') }}</small></td><td>{{ $variant->sku }}</td><td>{{ $variant->stock }}</td><td>{{ $product->base_currency }} {{ number_format((float)$variant->price_adjustment,2) }}</td><td>{{ $variant->barcode ?: '—' }}</td></tr>@endforeach</tbody></table></div>@else<div class="panel-empty"><h3>No variations yet</h3><p>Add the first variation below.</p></div>@endif</section>
+<section class="panel category-edit-panel"><div class="panel-heading"><div><h2>Add a variation</h2><p>Example: Color: Black, Size: XL</p></div></div><form class="category-create-form" method="post" action="{{ route('admin.products.variants.store',$product) }}">@csrf
+<label class="field-label">Variation name <span class="required">*</span><input name="name" required maxlength="150" placeholder="Black / XL"></label>
+<div class="form-grid"><label class="field-label">Unique SKU <span class="required">*</span><input name="sku" required maxlength="100" placeholder="CP-BLK-XL"></label><label class="field-label">Stock <span class="required">*</span><input type="number" name="stock" min="0" required value="0"></label><label class="field-label">Price adjustment <span class="required">*</span><input type="number" name="price_adjustment" step="0.01" required value="0"></label><label class="field-label">Barcode<input name="barcode" maxlength="150"></label></div>
+<label class="field-label">Attributes <small>Comma-separated key: value pairs</small><input name="attributes_text" maxlength="2000" placeholder="Color: Black, Size: XL, Material: Cotton"></label><div class="form-actions"><button class="btn btn-primary" type="submit">Add variation</button></div></form></section>
+@endsection
