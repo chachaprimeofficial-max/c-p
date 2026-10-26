@@ -154,11 +154,17 @@ class ProductController extends Controller
             'description' => ['nullable', 'string', 'max:30000'],
             'specification' => ['nullable', 'string', 'max:20000'],
             'brand_name' => ['nullable', 'string', 'max:150'],
+            'country_of_origin' => ['nullable', 'string', 'max:100'],
             'base_price' => ['required', 'numeric', 'min:0'],
             'list_price' => ['nullable', 'numeric', 'min:0'],
             'retail_price' => ['required', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
             'status' => ['required', 'in:draft,published,archived'],
+            'handling_time_days' => ['nullable', 'integer', 'min:0', 'max:90'],
+            'supplier_name' => ['nullable', 'string', 'max:255'],
+            'courier_name' => ['nullable', 'string', 'max:150'],
+            'return_policy' => ['nullable', 'string', 'max:10000'],
+            'warranty' => ['nullable', 'string', 'max:2000'],
         ]);
         $product->update($data);
         return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
