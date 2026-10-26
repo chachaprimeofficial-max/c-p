@@ -18,7 +18,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/login', [AdminLoginController::class, 'login'])->name('login.submit');
     });
 
-    Route::middleware('auth')->group(function () {
+    Route::middleware(['auth', 'admin'])->group(function () {
         Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::resource('products', AdminProductController::class)->except(['show']);
