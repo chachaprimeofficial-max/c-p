@@ -54,6 +54,7 @@ class OrderController extends Controller
                     $quantity = (int) $quantity;
                     if ($quantity < 1 || $quantity > $product->stock) throw new \RuntimeException('Stock changed for '.$product->name.'. Please update your cart.');
                     $sourcePrice = (float) $product->retail_price;
+                    $tier = null;
                     if ($product->b2b_enabled) {
                         $tier = $product->priceTiers->first(fn ($tier) => $quantity >= $tier->min_quantity && ($tier->max_quantity === null || $quantity <= $tier->max_quantity));
                         if ($tier) $sourcePrice = (float) $tier->unit_price;
