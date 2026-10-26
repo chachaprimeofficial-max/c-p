@@ -63,9 +63,10 @@ class StorefrontController extends Controller
             $tier->setAttribute('display_currency', $converted['currency']);
             $tier->setAttribute('currency_converted', $converted['converted']);
         }
+        $mainImage = $product->media->where('type', 'image')->first();
         $hasPurchasableStock = $product->stock > 0 || $product->variants->where('stock', '>', 0)->isNotEmpty();
         $hasExtraMedia = $product->media->where('type', 'image')->count() > 1 || $product->media->where('type', 'video')->isNotEmpty() || $product->media->whereIn('type', ['document', 'blueprint'])->isNotEmpty();
-        return view('storefront.show', compact('product', 'activeCampaigns', 'hasPurchasableStock', 'hasExtraMedia'));
+        return view('storefront.show', compact('product', 'activeCampaigns', 'hasPurchasableStock', 'hasExtraMedia', 'mainImage'));
     }
 
     private function decorateProduct(Product $product, CurrencyService $currencies): void
