@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\GroupBuyCampaign;
 use App\Services\CartPricingService;
 use App\Services\CurrencyService;
 use Illuminate\Http\RedirectResponse;
@@ -28,6 +29,7 @@ class CartController extends Controller
         $data = $request->validate([
             'quantity' => ['required', 'integer', 'min:1', 'max:10000'],
             'variant_id' => ['nullable', 'integer', 'exists:product_variants,id'],
+            'campaign_id' => ['nullable', 'integer', 'exists:group_buy_campaigns,id'],
         ]);
         $product->loadMissing('variants');
         $variant = null;
@@ -36,7 +38,17 @@ class CartController extends Controller
         } elseif ($product->variants->isNotEmpty()) {
             return back()->withErrors(['variant_id' => 'Choose a product variation before adding this item to your cart.']);
         }
-        $cartKey = $variant ? $product->id.':'.$variant->id : (string) $product->id;
+        $campaign = null;
+        if (!empty($data['campaign_id'])) {
+            $campaign = GroupBuyCampaign::whereKey($data['campaign_id'])->where('product_id', $product->id)->firstOrFail();
+            $availableNow = $campaign->status === 'active'
+                && (!$campaign->starts_at || $campaign->starts_at->isPast())
+                && (!$campaign->ends_at || $campaign->ends_at->isFuture())
+                && $campaign->current_participants < $campaign->target_participants;
+            if (!$availableNow) return back()->withErrors(['campaign_id' => 'This group-buy offer is no longer available. Please choose standard pricing or another active offer.']);
+        }
+        $cartKey = $product->id.($variant ? ':'.$variant->id : ':0').($campaign ? ':'.$campaign->id : '');
+        if (!$variant && !$campaign) $cartKey = (string) $product->id;
         $available = $variant ? (int) $variant->stock : (int) $product->stock;
         $cart = session('cart', []);
         $quantity = (int) ($cart[$cartKey] ?? 0) + (int) $data['quantity'];
