@@ -51,6 +51,15 @@ class StripeCheckoutService
         return ['id' => (string) $response->json('id'), 'url' => (string) $response->json('url')];
     }
 
+    public function retrieveSession(string $sessionId): array
+    {
+        $secret = (string) config('services.stripe.secret');
+        if ($secret === '') throw new RuntimeException('Card payments are not configured.');
+        $response = Http::withBasicAuth($secret, '')->timeout(15)->get('https://api.stripe.com/v1/checkout/sessions/'.rawurlencode($sessionId));
+        if (!$response->successful()) throw new RuntimeException('Could not verify the payment session.');
+        return $response->json();
+    }
+
     public function minorUnits(float $amount, string $currency): int
     {
         return in_array(strtoupper($currency), ['JPY'], true) ? (int) round($amount) : (int) round($amount * 100);
