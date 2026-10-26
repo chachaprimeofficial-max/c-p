@@ -86,5 +86,6 @@
   "cart.": "カート。",
   "Review quantities and pricing before proceeding to checkout.": "チェックアウトに進む前に数量と価格を確認してください。",
   "Your cart is waiting for something great": "カートに素敵な商品を追加しましょう",
-  "Group-buy offer has expired or reached its participant target.": "共同購入オファーは終了したか、参加人数の目標に達しました。"
+  "Group-buy offer has expired or reached its participant target.": "共同購入オファーは終了したか、参加人数の目標に達しました。",
+  "Some items were removed because the product or group-buy offer is no longer available. Please review your cart.": "商品または共同購入オファーが利用できなくなったため、一部の商品をカートから削除しました。カートを確認してください。"
 }
