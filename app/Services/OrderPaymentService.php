@@ -36,7 +36,7 @@ class OrderPaymentService
                 if ($variantId > 0) {
                     $variant = ProductVariant::whereKey($variantId)->where('product_id', $product->id)->lockForUpdate()->first();
                     if (!$variant || $variant->stock < $item->quantity) { $manualReview = true; continue; }
-                    $lockedProducts[] = ['record' => $variant, 'quantity' => $item->quantity];
+                    $lockedProducts[] = ['record' => $variant, 'parent' => $product, 'quantity' => $item->quantity];
                 } else {
                     if ($product->stock < $item->quantity) { $manualReview = true; continue; }
                     $lockedProducts[] = ['record' => $product, 'quantity' => $item->quantity];
@@ -44,7 +44,10 @@ class OrderPaymentService
             }
 
             if (!$manualReview) {
-                foreach ($lockedProducts as $line) $line['record']->decrement('stock', $line['quantity']);
+                foreach ($lockedProducts as $line) {
+                    $line['record']->decrement('stock', $line['quantity']);
+                    if (isset($line['parent'])) $line['parent']->decrement('stock', $line['quantity']);
+                }
             }
             $lockedOrder->update([
                 'payment_status' => 'paid',
