@@ -23,4 +23,4 @@ jobs:
       - name: Check PHP syntax
         run: find app bootstrap config database routes tests -name '*.php' -print0 | xargs -0 -n1 php -l
       - name: Run tests
-        run: php artisan test
+        run: cp .env.example .env && php artisan test
