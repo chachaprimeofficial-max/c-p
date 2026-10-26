@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Auth\AdminLoginController;
+use App\Http\Controllers\CustomerAuthController;
 use App\Http\Controllers\StorefrontController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,11 +16,20 @@ Route::get('/products/{product:slug}', [StorefrontController::class, 'show'])->n
 Route::get('/locale/{locale}', [StorefrontController::class, 'setLocale'])->name('locale.set');
 Route::get('/currency/{currency}', [StorefrontController::class, 'setCurrency'])->name('currency.set');
 
+Route::prefix('account')->name('account.')->group(function () {
+    Route::get('/register', [CustomerAuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [CustomerAuthController::class, 'register'])->name('register.submit');
+    Route::get('/login', [CustomerAuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [CustomerAuthController::class, 'login'])->name('login.submit');
+    Route::get('/verify-email', [CustomerAuthController::class, 'showVerify'])->name('verify');
+    Route::post('/verify-email', [CustomerAuthController::class, 'verify'])->name('verify.submit');
+    Route::post('/verify-email/resend', [CustomerAuthController::class, 'resend'])->name('verify.resend');
+    Route::post('/logout', [CustomerAuthController::class, 'logout'])->middleware('auth')->name('logout');
+});
+
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::middleware('guest')->group(function () {
-        Route::get('/login', [AdminLoginController::class, 'show'])->name('login');
-        Route::post('/login', [AdminLoginController::class, 'login'])->name('login.submit');
-    });
+    Route::get('/login', [AdminLoginController::class, 'show'])->name('login');
+    Route::post('/login', [AdminLoginController::class, 'login'])->name('login.submit');
 
     Route::middleware(['auth', 'admin'])->group(function () {
         Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
