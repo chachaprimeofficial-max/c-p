@@ -133,6 +133,12 @@ class StorefrontTest extends TestCase
         ]);
 
         $this->actingAs($admin)
+            ->get(route('admin.products.edit', $product))
+            ->assertOk()
+            ->assertSee('Existing product media')
+            ->assertSee('Test photo');
+
+        $this->actingAs($admin)
             ->delete(route('admin.products.media.destroy', [$product, $otherMedia]))
             ->assertNotFound();
         $this->assertDatabaseHas('product_media', ['id' => $otherMedia->id]);
