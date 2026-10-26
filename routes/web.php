@@ -6,13 +6,24 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Auth\AdminLoginController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerAuthController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\StorefrontController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [StorefrontController::class, 'home'])->name('home');
 Route::get('/products', [StorefrontController::class, 'products'])->name('products.index');
 Route::get('/products/{product:slug}', [StorefrontController::class, 'show'])->name('products.show');
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/{product}/add', [CartController::class, 'add'])->name('cart.add');
+Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/remove/{productId}', [CartController::class, 'remove'])->whereNumber('productId')->name('cart.remove');
+Route::middleware('auth')->group(function () {
+    Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
+    Route::post('/checkout', [OrderController::class, 'place'])->name('checkout.place');
+    Route::get('/checkout/success', [OrderController::class, 'success'])->name('checkout.success');
+});
 Route::get('/locale/{locale}', [StorefrontController::class, 'setLocale'])->name('locale.set');
 Route::get('/currency/{currency}', [StorefrontController::class, 'setCurrency'])->name('currency.set');
 
