@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [SetLocaleAndCurrency::class]);
         $middleware->validateCsrfTokens(except: ['payments/stripe/webhook']);
-        $middleware->redirectGuestsTo(fn ($request) => $request->is('account/*') ? route('account.login') : route('admin.login'));
+        $middleware->redirectGuestsTo(fn ($request) => ($request->is('account/*') || $request->is('checkout*')) ? route('account.login') : route('admin.login'));
         $middleware->alias(['admin' => EnsureAdmin::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
