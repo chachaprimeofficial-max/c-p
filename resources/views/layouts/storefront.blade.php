@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+<link rel="stylesheet" href="{{ asset('css/commerce.css') }}">
 </head>
 <body class="storefront">
 <div class="announcement"><span>{{ __('Global sourcing from China') }}</span><span>{{ __('Wholesale prices · Trusted support · Worldwide delivery') }}</span></div>
