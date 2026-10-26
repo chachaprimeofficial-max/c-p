@@ -3,17 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Services\CartPricingService;
+use App\Services\CurrencyService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class CartController extends Controller
 {
-    public function index(): View
+    public function index(CartPricingService $pricing, CurrencyService $currencies): View
     {
-        $cart = session('cart', []);
-        $products = Product::with(['media', 'priceTiers'])->whereIn('id', array_keys($cart))->where('status', 'published')->get()->keyBy('id');
-        return view('storefront.cart', ['cart' => $cart, 'products' => $products]);
+        $lines = $pricing->lines(session('cart', []), $currencies);
+        $subtotal = array_sum(array_column($lines, 'line_total'));
+        $currency = $lines[0]['currency'] ?? $currencies->currentCurrency();
+        return view('storefront.cart', compact('lines', 'subtotal', 'currency'));
     }
 
     public function add(Request $request, Product $product): RedirectResponse
