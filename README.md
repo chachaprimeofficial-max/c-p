@@ -35,8 +35,9 @@ A Laravel + MySQL single-vendor commerce platform for sourcing products from Chi
 4. Run `php artisan key:generate` if no application key has been set.
 5. Run `php artisan migrate --force` after checking the database connection and backup status.
 6. Run `php artisan storage:link` so public product media can be served.
-7. Configure the web root to Laravel's `public/` directory, then clear/rebuild config and route caches as appropriate.
-8. Run `php artisan test` and complete a full end-to-end test before going live.
+7. Run `php artisan admin:create` to create the first administrator interactively. The command prompts for the email and password without putting the password in shell history.
+8. Configure the web root to Laravel's `public/` directory, then clear/rebuild config and route caches as appropriate.
+9. Run `php artisan test` and complete a full end-to-end test before going live.
 
 ## Production launch checklist
 
