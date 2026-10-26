@@ -2,7 +2,7 @@
 @section('title','Edit product')
 @section('breadcrumb','Products / Edit')
 @section('content')
-<div class="page-heading"><div><div class="eyebrow">CATALOGUE MANAGEMENT</div><h1>Edit product</h1><p>Update all listing sections, media, price tiers and logistics.</p></div><a class="btn btn-secondary" href="{{ route('admin.products.index') }}">← Back to products</a></div>
+<div class="page-heading"><div><div class="eyebrow">CATALOGUE MANAGEMENT</div><h1>Edit product</h1><p>Update all listing sections, media, price tiers and logistics.</p></div><a class="btn btn-secondary" href="{{ route('admin.products.variants.index',$product) }}">Manage variations</a><a class="btn btn-secondary" href="{{ route('admin.products.index') }}">← Back to products</a></div>
 <form class="product-form" method="post" action="{{ route('admin.products.update',$product) }}" enctype="multipart/form-data">@csrf @method('PUT')
 <section class="form-section"><div class="form-section-head"><span class="form-step">01</span><div><h2>Basic product information</h2><p>Product ID: {{ $product->product_code }} · QR reference: {{ $product->qr_code_number }}</p></div></div><div class="form-grid">
 <label class="field-label field-span-2">Product name <span class="required">*</span><input name="name" required maxlength="255" value="{{ old('name',$product->name) }}"></label>
