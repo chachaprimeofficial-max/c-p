@@ -15,12 +15,21 @@ class CartController extends Controller
 {
     public function index(CartPricingService $pricing, CurrencyService $currencies): View
     {
-        $lines = $pricing->lines(session('cart', []), $currencies);
+        $cart = session('cart', []);
+        $lines = $pricing->lines($cart, $currencies);
+        $validKeys = array_fill_keys(array_column($lines, 'key'), true);
+        $removedItems = array_diff_key($cart, $validKeys);
+        $cartNotice = null;
+        if ($removedItems) {
+            $cart = array_intersect_key($cart, $validKeys);
+            session(['cart' => $cart]);
+            $cartNotice = 'Some items were removed because the product or group-buy offer is no longer available. Please review your cart.';
+        }
         $subtotal = array_sum(array_column($lines, 'line_total'));
         $currency = $currencies->currentCurrency();
         $pricingAvailable = collect($lines)->every(fn ($line) => $line['currency'] === $currency && $line['converted']);
         if (!$pricingAvailable) $subtotal = null;
-        return view('storefront.cart', compact('lines', 'subtotal', 'currency', 'pricingAvailable'));
+        return view('storefront.cart', compact('lines', 'subtotal', 'currency', 'pricingAvailable', 'cartNotice'));
     }
 
     public function add(Request $request, Product $product): RedirectResponse
