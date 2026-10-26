@@ -86,5 +86,6 @@
   "cart.": "cart.",
   "Review quantities and pricing before proceeding to checkout.": "Review quantities and pricing before proceeding to checkout.",
   "Your cart is waiting for something great": "Your cart is waiting for something great",
-  "Group-buy offer has expired or reached its participant target.": "Group-buy offer has expired or reached its participant target."
+  "Group-buy offer has expired or reached its participant target.": "Group-buy offer has expired or reached its participant target.",
+  "Some items were removed because the product or group-buy offer is no longer available. Please review your cart.": "Some items were removed because the product or group-buy offer is no longer available. Please review your cart."
 }
