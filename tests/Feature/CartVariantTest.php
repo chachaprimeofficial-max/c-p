@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\GroupBuyCampaign;
 use App\Services\CartPricingService;
 use App\Services\CurrencyService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -46,8 +47,42 @@ class CartVariantTest extends TestCase
 
     public function test_cart_key_parser_keeps_legacy_product_keys_compatible(): void
     {
-        $this->assertSame([42, 0], app(CartPricingService::class)->parseKey('42'));
-        $this->assertSame([42, 7], app(CartPricingService::class)->parseKey('42:7'));
-        $this->assertSame([0, 0], app(CartPricingService::class)->parseKey('invalid'));
+        $this->assertSame([42, 0, 0], app(CartPricingService::class)->parseKey('42'));
+        $this->assertSame([42, 7, 0], app(CartPricingService::class)->parseKey('42:7'));
+        $this->assertSame([42, 0, 9], app(CartPricingService::class)->parseKey('42:0:9'));
+        $this->assertSame([0, 0, 0], app(CartPricingService::class)->parseKey('invalid'));
+    }
+
+    public function test_cart_pricing_applies_an_active_group_buy_campaign_price(): void
+    {
+        $product = Product::create([
+            'name' => 'Group-buy test product',
+            'base_price' => 20,
+            'retail_price' => 20,
+            'base_currency' => 'USD',
+            'stock' => 8,
+            'group_buy_enabled' => true,
+            'status' => 'published',
+        ]);
+        $campaign = GroupBuyCampaign::create([
+            'product_id' => $product->id,
+            'title' => 'Launch group offer',
+            'unit_price' => 12,
+            'currency' => 'USD',
+            'target_participants' => 5,
+            'current_participants' => 1,
+            'starts_at' => now()->subMinute(),
+            'ends_at' => now()->addDay(),
+            'status' => 'active',
+        ]);
+
+        $lines = app(CartPricingService::class)->lines([
+            $product->id.':0:'.$campaign->id => 2,
+        ], app(CurrencyService::class));
+
+        $this->assertCount(1, $lines);
+        $this->assertSame($campaign->id, $lines[0]['campaign']->id);
+        $this->assertEquals(12.00, $lines[0]['unit_price']);
+        $this->assertEquals(24.00, $lines[0]['line_total']);
     }
 }
