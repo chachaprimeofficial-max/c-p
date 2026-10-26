@@ -51,13 +51,19 @@ class StorefrontController extends Controller
         abort_unless($product->status === 'published', 404);
         $product->load(['media', 'category', 'priceTiers', 'variants', 'groupBuyCampaigns']);
         $this->decorateProduct($product, $currencies);
+        $activeCampaigns = $product->groupBuyCampaigns->filter(fn ($campaign) => $campaign->status === 'active' && (!$campaign->starts_at || $campaign->starts_at->isPast()) && (!$campaign->ends_at || $campaign->ends_at->isFuture()));
+        foreach ($activeCampaigns as $campaign) {
+            $convertedCampaign = $currencies->convert((float) $campaign->unit_price, $campaign->currency, $currencies->currentCurrency());
+            $campaign->setAttribute('display_price', $convertedCampaign['amount']);
+            $campaign->setAttribute('display_currency', $convertedCampaign['currency']);
+        }
         foreach ($product->priceTiers as $tier) {
             $converted = $currencies->convert((float) $tier->unit_price, $tier->currency, $currencies->currentCurrency());
             $tier->setAttribute('display_price', $converted['amount']);
             $tier->setAttribute('display_currency', $converted['currency']);
             $tier->setAttribute('currency_converted', $converted['converted']);
         }
-        return view('storefront.show', compact('product'));
+        return view('storefront.show', compact('product', 'activeCampaigns'));
     }
 
     private function decorateProduct(Product $product, CurrencyService $currencies): void
