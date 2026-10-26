@@ -9,6 +9,7 @@ use App\Services\CartPricingService;
 use App\Services\CurrencyService;
 use App\Services\OrderPaymentService;
 use App\Services\StripeCheckoutService;
+use App\Services\ShippingCalculatorService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +29,7 @@ class OrderController extends Controller
         return view('storefront.checkout', compact('lines', 'subtotal', 'currency'));
     }
 
-    public function place(Request $request, CurrencyService $currencies, StripeCheckoutService $stripe): RedirectResponse
+    public function place(Request $request, CurrencyService $currencies, StripeCheckoutService $stripe, ShippingCalculatorService $shippingCalculator): RedirectResponse
     {
         abort_if($request->user()->is_admin, 403);
         if (!$request->user()->email_verified_at) return redirect()->route('account.verify', ['email' => $request->user()->email]);
@@ -51,11 +52,11 @@ class OrderController extends Controller
         $cart = session('cart', []);
         $order = null;
         try {
-            $order = DB::transaction(function () use ($cart, $data, $currency, $request, $currencies) {
+            $order = DB::transaction(function () use ($cart, $data, $currency, $request, $currencies, $shippingCalculator) {
                 $lines = [];
                 $subtotal = 0.0;
                 foreach ($cart as $productId => $quantity) {
-                    $product = Product::with('priceTiers')->whereKey($productId)->where('status', 'published')->lockForUpdate()->firstOrFail();
+                    $product = Product::with(['priceTiers', 'shippingTemplate'])->whereKey($productId)->where('status', 'published')->lockForUpdate()->firstOrFail();
                     $quantity = (int) $quantity;
                     if ($quantity < 1 || $quantity > $product->stock) throw new \RuntimeException('Stock changed for '.$product->name.'. Please update your cart.');
                     $sourcePrice = (float) $product->retail_price;
@@ -72,15 +73,16 @@ class OrderController extends Controller
                     $subtotal += $lineTotal;
                     $lines[] = ['product' => $product, 'quantity' => $quantity, 'unit_price' => $unitPrice, 'line_total' => $lineTotal];
                 }
+                $shippingTotal = $shippingCalculator->calculate($lines, $data['shipping_country'], $currency, $currencies);
                 $order = Order::create([
                     'user_id' => $request->user()->id, 'customer_name' => $data['customer_name'],
                     'email' => strtolower($data['email']), 'phone' => $data['phone'] ?? null,
-                    'currency' => $currency, 'subtotal' => round($subtotal, 2), 'shipping_total' => 0,
-                    'grand_total' => round($subtotal, 2), 'payment_provider' => 'stripe',
+                    'currency' => $currency, 'subtotal' => round($subtotal, 2), 'shipping_total' => $shippingTotal,
+                    'grand_total' => round($subtotal + $shippingTotal, 2), 'payment_provider' => 'stripe',
                     'payment_status' => 'pending', 'order_status' => 'pending_payment',
                     'shipping_country' => strtoupper($data['shipping_country']), 'shipping_state' => $data['shipping_state'] ?? null,
                     'shipping_city' => $data['shipping_city'], 'shipping_postal_code' => $data['shipping_postal_code'] ?? null,
-                    'shipping_address' => $data['shipping_address'], 'customer_notes' => $data['customer_notes'] ?? 'Shipping charges and delivery time must be confirmed before fulfillment.',
+                    'shipping_address' => $data['shipping_address'], 'customer_notes' => $data['customer_notes'] ?? null,
                 ]);
                 foreach ($lines as $line) {
                     OrderItem::create([
