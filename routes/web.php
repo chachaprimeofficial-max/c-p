@@ -10,6 +10,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerAuthController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\StorefrontController;
+use App\Http\Controllers\StripeWebhookController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [StorefrontController::class, 'home'])->name('home');
@@ -26,6 +27,7 @@ Route::middleware('auth')->group(function () {
 });
 Route::get('/locale/{locale}', [StorefrontController::class, 'setLocale'])->name('locale.set');
 Route::get('/currency/{currency}', [StorefrontController::class, 'setCurrency'])->name('currency.set');
+Route::post('/payments/stripe/webhook', [StripeWebhookController::class, 'handle'])->name('payments.stripe.webhook');
 
 Route::prefix('account')->name('account.')->group(function () {
     Route::get('/register', [CustomerAuthController::class, 'showRegister'])->name('register');
