@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
@@ -24,5 +25,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::resource('products', AdminProductController::class)->except(['show']);
         Route::resource('categories', CategoryController::class)->except(['show', 'create']);
+        Route::resource('brands', BrandController::class)->only(['index', 'store', 'destroy']);
     });
 });
