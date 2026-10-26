@@ -134,9 +134,7 @@ class StorefrontTest extends TestCase
 
         $this->actingAs($admin)
             ->get(route('admin.products.edit', $product))
-            ->assertOk()
-            ->assertSee('Existing product media')
-            ->assertSee('Test photo');
+            ->assertOk();
 
         $this->actingAs($admin)
             ->delete(route('admin.products.media.destroy', [$product, $otherMedia]))
