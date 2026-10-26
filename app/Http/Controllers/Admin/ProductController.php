@@ -148,7 +148,7 @@ class ProductController extends Controller
     public function edit(Product $product): View
     {
         $product->load(['media', 'priceTiers']);
-        return view('admin.products.edit', ['product' => $product, 'categories' => Category::where('is_active', true)->orderBy('name')->get(), 'brands' => Brand::where('is_active', true)->orderBy('name')->get()]);
+        return view('admin.products.edit', ['product' => $product, 'categories' => Category::where('is_active', true)->orderBy('name')->get(), 'brands' => Brand::where('is_active', true)->orderBy('name')->get(), 'shippingTemplates' => ShippingTemplate::where('is_active', true)->orderBy('name')->get()]);
     }
 
     public function update(Request $request, Product $product): RedirectResponse
@@ -229,7 +229,10 @@ class ProductController extends Controller
         unset($data['currency'], $data['selling_countries_text'], $data['tracking_numbers_text'], $data['main_variation'], $data['variation_values'], $data['attributes_text'], $data['applicable_parcel'], $data['sub_category_name'], $data['sub_sub_category_name'], $data['tier_min'], $data['tier_max'], $data['tier_price'], $data['blueprints'], $data['product_documents'], $data['product_images'], $data['product_video']);
 
         DB::transaction(function () use ($data, $request, $product): void {
-            $product->update($data);
+            if (array_key_exists('shipping_template_id', $data)) {
+            $data['shipping_template'] = !empty($data['shipping_template_id']) ? ShippingTemplate::find($data['shipping_template_id'])?->name : null;
+        }
+        $product->update($data);
             foreach ($request->file('product_images', []) as $index => $image) {
                 $path = $image->store('products/'.$product->id, 'public');
                 $product->media()->create(['type' => 'image', 'path' => $path, 'sort_order' => (int) ($product->media()->where('type', 'image')->max('sort_order') ?? -1) + $index + 1]);
