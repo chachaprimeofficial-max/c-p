@@ -19,7 +19,7 @@ class OrderEmailService
         });
         $admin = (string) config('mail.marketplace_admin', 'admin@chachaprime.com');
         Mail::raw("A payment has been confirmed.\nOrder: {$order->order_number}\nCustomer: {$order->customer_name} ({$order->email})\nTotal: {$order->currency} ".number_format((float) $order->grand_total, 2), function ($message) use ($admin, $order) {
-            $message->from('team@chachaprime.com', 'ChachaPrime Operations')->to($admin)->subject('Paid order needs fulfillment — '.$order->order_number);
+            $message->from('no-reply@chachaprime.com', 'ChachaPrime')->replyTo('team@chachaprime.com')->to($admin)->subject('Paid order needs fulfillment — '.$order->order_number);
         });
     }
 
@@ -28,7 +28,7 @@ class OrderEmailService
         $tracking = $order->tracking_number ?: 'Tracking details will be shared when available.';
         $courier = $order->courier_name ?: 'Courier to be confirmed';
         Mail::raw("Your ChachaPrime order {$order->order_number} has been marked as shipped.\n\nCourier: {$courier}\nTracking: {$tracking}\n\nFor help, contact support@chachaprime.com.", function ($message) use ($order) {
-            $message->from('no-reply@chachaprime.com', 'ChachaPrime')->to($order->email)->subject('Your order has shipped — '.$order->order_number);
+            $message->from('no-reply@chachaprime.com', 'ChachaPrime')->replyTo('support@chachaprime.com')->to($order->email)->subject('Your order has shipped — '.$order->order_number);
         });
     }
 
@@ -37,7 +37,7 @@ class OrderEmailService
         $return->loadMissing(['order', 'user']);
         $admin = (string) config('mail.marketplace_admin', 'admin@chachaprime.com');
         Mail::raw("A customer return request needs review.\nOrder: ".$return->order?->order_number."\nCustomer: ".$return->user?->name." (".$return->user?->email.")\nReason: {$return->reason}\nDetails: ".($return->details ?: 'No details supplied'), function ($message) use ($admin, $return) {
-            $message->from('team@chachaprime.com', 'ChachaPrime Operations')->to($admin)->subject('Return request received — order '.$return->order?->order_number);
+            $message->from('no-reply@chachaprime.com', 'ChachaPrime')->replyTo('team@chachaprime.com')->to($admin)->subject('Return request received — order '.$return->order?->order_number);
         });
     }
 }
