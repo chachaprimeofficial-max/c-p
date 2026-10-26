@@ -86,5 +86,6 @@
   "cart.": "السلة.",
   "Review quantities and pricing before proceeding to checkout.": "راجع الكميات والأسعار قبل المتابعة إلى الدفع.",
   "Your cart is waiting for something great": "سلتك بانتظار منتجات رائعة",
-  "Group-buy offer has expired or reached its participant target.": "انتهى عرض الشراء الجماعي أو وصل إلى عدد المشاركين المستهدف."
+  "Group-buy offer has expired or reached its participant target.": "انتهى عرض الشراء الجماعي أو وصل إلى عدد المشاركين المستهدف.",
+  "Some items were removed because the product or group-buy offer is no longer available. Please review your cart.": "تمت إزالة بعض المنتجات لأن المنتج أو عرض الشراء الجماعي لم يعد متاحًا. يُرجى مراجعة سلتك."
 }
