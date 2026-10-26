@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AiController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -23,6 +24,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware(['auth', 'admin'])->group(function () {
         Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+        Route::post('/ai/product-copy', [AiController::class, 'productCopy'])->name('ai.product-copy');
         Route::resource('products', AdminProductController::class)->except(['show']);
         Route::resource('categories', CategoryController::class)->except(['show', 'create']);
         Route::resource('brands', BrandController::class)->only(['index', 'store', 'destroy']);
