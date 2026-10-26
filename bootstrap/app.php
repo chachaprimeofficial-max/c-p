@@ -14,8 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [SetLocaleAndCurrency::class]);
-        $middleware->redirectGuestsTo(fn () => route('admin.login'));
-        $middleware->redirectUsersTo(fn () => route('admin.dashboard'));
+        $middleware->redirectGuestsTo(fn ($request) => $request->is('account/*') ? route('account.login') : route('admin.login'));
         $middleware->alias(['admin' => EnsureAdmin::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
