@@ -3,7 +3,7 @@
 @section('content')
 <div class="breadcrumb"><a href="{{ route('home') }}">{{ __('Home') }}</a><span>/</span><a href="{{ route('products.index') }}">{{ __('All products') }}</a><span>/</span><span>{{ $product->name }}</span></div>
 <section class="product-detail-layout"><div class="detail-gallery"><div class="detail-main-image">@if($product->media->where('type','image')->first())<img src="{{ asset('storage/'.$product->media->where('type','image')->first()->path) }}" alt="{{ $product->name }}">@else<div class="product-placeholder detail-placeholder"><span>CP</span></div>@endif</div>
-@if($product->media->where('type','image')->count() > 1 || $product->media->where('type','video')->isNotEmpty() || $product->media->whereIn('type',['document','blueprint'])->isNotEmpty())
+@if($hasExtraMedia)
 <div class="detail-media-assets">
 @foreach($product->media->where('type','image')->skip(1) as $media)<a class="detail-media-thumb" href="{{ asset('storage/'.$media->path) }}" target="_blank" rel="noopener"><img src="{{ asset('storage/'.$media->path) }}" alt="{{ $media->alt_text ?: $product->name }}"></a>@endforeach
 @foreach($product->media->where('type','video') as $media)<video class="detail-media-video" controls preload="metadata"><source src="{{ asset('storage/'.$media->path) }}"></video>@endforeach
