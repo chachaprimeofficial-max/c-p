@@ -11,6 +11,31 @@
 <label class="field-label field-span-2">Description<textarea name="description" rows="5">{{ old('description',$product->description) }}</textarea></label>
 <label class="field-label field-span-2">Specifications<textarea name="specification" rows="3">{{ old('specification',$product->specification) }}</textarea></label>
 <label class="field-label field-span-2">Blueprints / design files <small>Upload additional files · up to 5 per submission</small><input type="file" name="blueprints[]" multiple accept=".pdf,.png,.jpg,.jpeg" data-max-files="5"></label>
+@if($product->media->isNotEmpty())
+<div class="field-span-2 product-media-manager">
+<h3>Existing product media</h3>
+<p>These files are already attached to this product. Deleting a file removes it from the storefront and public storage.</p>
+<div class="product-media-manager-grid">
+@foreach($product->media as $media)
+<div class="product-media-manager-item">
+<div class="product-media-manager-preview">
+@if($media->type === 'image')
+<img src="{{ asset('storage/'.$media->path) }}" alt="{{ $media->alt_text ?: $product->name }}">
+@elseif($media->type === 'video')
+<span>▶ VIDEO</span>
+@elseif($media->type === 'blueprint')
+<span>PDF / BLUEPRINT</span>
+@else
+<span>DOCUMENT</span>
+@endif
+</div>
+<div class="product-media-manager-meta"><strong>{{ ucfirst($media->type) }}</strong><small>{{ basename($media->path) }}</small></div>
+<button type="button" class="btn btn-danger btn-small" data-delete-media="{{ $media->id }}">Delete file</button>
+</div>
+@endforeach
+</div>
+</div>
+@endif
 </div></section>
 <section class="form-section"><div class="form-section-head"><span class="form-step">02</span><div><h2>Pricing & business models</h2><p>Maintain base, retail, list and quantity-based B2B prices.</p></div></div><div class="form-grid">
 <label class="field-label">Currency <select name="currency" required>@foreach(config('marketplace.currencies') as $code=>$currency)<option value="{{ $code }}" @selected(old('currency',$product->base_currency)===$code)>{{ $code }} — {{ $currency['name'] }}</option>@endforeach</select></label>
@@ -39,6 +64,9 @@
 <section class="form-section"><div class="form-section-head"><span class="form-step">11</span><div><h2>Review & publish</h2><p>Choose the storefront status and homepage placement.</p></div></div><div class="form-grid"><label class="field-label">Listing status<select name="status" required>@foreach(['draft'=>'Save as draft','published'=>'Published','archived'=>'Archived'] as $value=>$label)<option value="{{ $value }}" @selected(old('status',$product->status)===$value)>{{ $label }}</option>@endforeach</select></label><label class="field-label">Featured product<select name="featured"><option value="0" @selected(!old('featured',$product->featured))>No</option><option value="1" @selected((bool)old('featured',$product->featured))>Yes — feature on homepage</option></select></label></div></section>
 <div class="form-actions"><a class="btn btn-secondary" href="{{ route('admin.products.index') }}">Cancel</a><button class="btn btn-primary" type="submit">Save all changes <span>→</span></button></div>
 </form>
+@foreach($product->media as $media)
+<form id="delete-media-{{ $media->id }}" method="post" action="{{ route('admin.products.media.destroy', [$product, $media]) }}" hidden>@csrf @method('DELETE')</form>
+@endforeach
 <section class="form-section barcode-label-section"><div class="form-section-head"><span class="form-step">ID</span><div><h2>Printable product label</h2><p>Use the internal barcode and QR reference for warehouse identification.</p></div></div><div class="barcode-label" id="productLabel"><div><small>CHACHAPRIME PRODUCT ID</small><strong>{{ $product->product_code }}</strong><span>SKU: {{ $product->sku }}</span><span>QR reference: {{ $product->qr_code_number }}</span></div><svg id="productBarcode"></svg><div id="productQrCode" class="product-qr"></div></div><button class="btn btn-secondary print-label-button" type="button" id="printProductLabel">Print product label</button></section>
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script><script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script><script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -46,6 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
  const productUrl = @json(route('products.show', $product));
  if (window.JsBarcode) window.JsBarcode('#productBarcode', productCode, {format: 'CODE39', displayValue: true, height: 42, margin: 4, fontSize: 12});
  if (window.QRCode) new window.QRCode(document.getElementById('productQrCode'), {text: productUrl, width: 94, height: 94});
+ document.querySelectorAll('[data-delete-media]').forEach(function (button) { button.addEventListener('click', function () { if (window.confirm('Delete this product media file? This cannot be undone.')) { const form = document.getElementById('delete-media-' + button.dataset.deleteMedia); if (form) form.submit(); } }); });
  const printButton = document.getElementById('printProductLabel');
  if (printButton) printButton.addEventListener('click', function () { window.print(); });
 });
