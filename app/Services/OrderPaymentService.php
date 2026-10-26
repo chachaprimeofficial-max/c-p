@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\GroupBuyCampaign;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 use Throwable;
@@ -54,6 +55,31 @@ class OrderPaymentService
                 'order_status' => $manualReview ? 'manual_review' : 'processing',
                 'paid_at' => now(),
             ]);
+
+            // Count a buyer once per campaign, and only after a verified payment.
+            if ($lockedOrder->user_id) {
+                foreach ($items as $item) {
+                    $campaignId = (int) ($item->attributes['group_buy_campaign_id'] ?? 0);
+                    if (!$campaignId) continue;
+                    $campaign = GroupBuyCampaign::whereKey($campaignId)->lockForUpdate()->first();
+                    if (!$campaign) continue;
+                    $inserted = DB::table('group_buy_participants')->insertOrIgnore([
+                        'campaign_id' => $campaign->id,
+                        'user_id' => $lockedOrder->user_id,
+                        'order_id' => $lockedOrder->id,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                    if ($inserted) {
+                        $campaign->increment('current_participants');
+                        $campaign->refresh();
+                        if ($campaign->status === 'active' && $campaign->current_participants >= $campaign->target_participants) {
+                            $campaign->update(['status' => 'completed']);
+                        }
+                    }
+                }
+            }
+
             return [$lockedOrder->fresh(), true];
         });
 
